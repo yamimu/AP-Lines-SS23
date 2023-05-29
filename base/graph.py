@@ -10,8 +10,11 @@ class Node:
     def __init__(self, coord = None) -> None:
         """
         Initalizes a Node with n Dimensional Coordinates
-        @param self
-        @param coord (default = [0,0])
+        :param self:
+        :param coord: (default = [0,0])
+
+        :return: None
+        :raises: None
         """
         if coord != None:
             if type(coord) != np.array:
@@ -24,10 +27,11 @@ class Node:
         ''' 
         calculates the euclidian distance between self and
         another node, when the dimensions match
-        @param self
-        @param node
+        :param self:
+        :param node:
 
-        returns distance as float
+        :return: distance as float
+        :raises: ValueError('dim don't match')
         '''
         if self.dim() != node.dim():
             raise(ValueError("dim don't match"))
@@ -44,13 +48,15 @@ class Graph:
     """
     def __init__(self,nodes, edges = None, undirected = True) -> None:
         """
-        @param self
-        @param nodes of the graph
-        @param edges (default None) 
+        :param self:
+        :param nodes: nodes of the graph
+        :param edges: (default None) 
             can either be type(Node) or indices of nodes
-        @param undirected (default = False)
+        :param undirected: (default = False)
             bool specifying if graph is directed 
             --> graph directed
+        :return: Graph
+        :raises: check_edge errors
         """
         self.n_nodes = len(nodes)
         self.undirected = undirected
@@ -71,12 +77,11 @@ class Graph:
         returns the index of a node in this graph to be able to use
         indices when working with edges instead of always looking up
         edges
-        @param self
-        @param node 
-            node which index to be returned
-
-        return:
-            index of node if node is part of the graph
+        :param self:
+        :param node: node which index to be returned
+        
+        :return: index of node if node is part of the graph
+        :raises: 'can only convert Node to indices' and 'node not in list'
         """
         if type(node) != Node:
             raise(ValueError("can only convert Nodes to indices"))
@@ -87,10 +92,10 @@ class Graph:
     def check_edge(self,edge):
         """
         performs type checks on a given edge to prevent invalid inputs
-        @param self
-        @param edge
-        return:
-            i,j index of first and second node in edge
+        :param self:
+        :param edge:
+        :return: i,j index of first and second node in edge
+        :raises: edge type missmatch; to_index errors
         """
         if type(edge[0]) != type(edge[1]):
             raise(ValueError("edge type missmatch"))
@@ -108,9 +113,12 @@ class Graph:
         adds edge to graph automatically calculating the euclidian distance
         as the weight respects directionality
 
-        @param self
-        @param edge edge to be added
-        @param w (default = None) weight to be put in the adjacency_matix
+        :param self:
+        :param edge: edge to be added
+        :param w: (default = None) weight to be put in the adjacency_matix
+
+        :return: None
+        :raises: Node
         """
         i,j = self.check_edge(edge)
         if isinstance(w, None):
@@ -122,8 +130,11 @@ class Graph:
     def remove_edge(self,edge):
         """
         removes edge from graph respects directionality
-        @param self
-        @param edge
+        :param self:
+        :param edge:
+
+        :return: None
+        :raises: None
         """
         i,j = self.check_edge(edge)
         self.adjacency_matrix[i][j] = 0
