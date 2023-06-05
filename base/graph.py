@@ -154,4 +154,4 @@ node3 = Node(coord = [7,9])
 
 edges = [(0,1),(1,2)]
 g = Graph([node0,node1,node2], edges)
-print(g.adjacency_matrix)
+#print(g.adjacency_matrix)
