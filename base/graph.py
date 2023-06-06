@@ -140,6 +140,49 @@ class Graph:
         self.adjacency_matrix[i][j] = 0
         if self.undirected:
             self.adjacency_matrix[j][i] = 0
+            
+            
+    def add_node(self,point,edges):
+        """
+        adds new node into graph 
+        :param self:
+        :param point:
+        :param edges:
+
+        :return: None
+        :raises: None
+        """
+
+        self.nodes.append(point)
+        self.n_nodes = len(self.nodes)
+        adma = np.zeros((len(self.nodes),len(self.nodes)))
+        adma[0:len(self.nodes)-1,0:len(self.nodes)-1] = self.adjacency_matrix 
+        self.adjacency_matrix = adma
+        if edges != None:
+            for i in edges:
+                j = self.n_nodes-1
+                w = self.nodes[i].euclidian_distance(self.nodes[j])
+                #add weights here
+                if self.undirected:
+                    self.adjacency_matrix[i][j] = w
+                self.adjacency_matrix[j][i] = w
+            
+            
+    def delete_node(self,point):
+        """
+        deletes existing node in graph 
+        :param self:
+        :param point:
+
+        :return: None
+        :raises: None
+        """
+        j = self.to_index(point)
+        self.adjacency_matrix = np.delete(self.adjacency_matrix,j,axis=0)
+        self.adjacency_matrix = np.delete(self.adjacency_matrix,j,axis=1)
+        self.nodes.remove(point)
+        self.n_nodes -= 1
+            
 
 
     
@@ -154,4 +197,7 @@ node3 = Node(coord = [7,9])
 
 edges = [(0,1),(1,2)]
 g = Graph([node0,node1,node2], edges)
-#print(g.adjacency_matrix)
+g.add_node(node3,[0,1])
+print(g.adjacency_matrix)
+g.delete_node(node0)
+print(g.adjacency_matrix)
