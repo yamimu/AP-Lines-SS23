@@ -1,4 +1,4 @@
-from .graph import Graph, Node
+from ..base.graph import Graph, Node
 import copy
 import numpy as np
 
