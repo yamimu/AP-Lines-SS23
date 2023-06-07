@@ -34,7 +34,8 @@ class Ui_Lines(object):
         self.graphView.setFont(font)
         self.graphView.setObjectName("graphView")
         self.label_lines = QtWidgets.QLabel(self.centralwidget)
-        self.label_lines.setGeometry(QtCore.QRect(470, 20, 141, 31))
+        self.label_lines.setGeometry(QtCore.QRect(380, 20, 321, 31))
+        self.label_lines.setAlignment(QtCore.Qt.AlignCenter)
         font = QtGui.QFont()
         font.setPointSize(20)
         font.setBold(True)
@@ -101,12 +102,12 @@ class Ui_Lines(object):
         _translate = QtCore.QCoreApplication.translate
         Lines.setWindowTitle(_translate("Lines", "Lines"))
         self.pushButton_start.setText(_translate("Lines", "Start"))
-        self.label_lines.setText(_translate("Lines", "Lines"))
+        self.label_lines.setText(_translate("Lines", "Lines - Level 1"))
         self.label_start.setText(_translate("Lines", "Startpunkt:"))
         self.label_x.setText(_translate("Lines", "x:"))
         self.label_y.setText(_translate("Lines", "y:"))
         self.pushButton.setText(_translate("Lines", "Next Level"))
-        self.label_winner.setText(_translate("Lines", "Winner:"))
+#        self.label_winner.setText(_translate("Lines", "Winner:"))
 
 if __name__ == '__main__':
 
