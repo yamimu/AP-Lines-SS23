@@ -29,26 +29,23 @@ def dijkstra(graph, start_node, return_paths = False):
         :return: distances to nodes; (paths)
         :raises: 
         """
-        dijkstra_graph = graph
+        adjacency_matrix = copy.deepcopy(graph.adjacency_matrix)
         # to reset edges but keep node knowledge
-        dijkstra_graph.adjacency_matrix[dijkstra_graph.adjacency_matrix ==0] = float("inf")
-        dist = np.full(dijkstra_graph.n_nodes,float("inf"))
-        dist[dijkstra_graph.index_of(start_node)] = 0
-        Q = graph.nodes
+        adjacency_matrix[adjacency_matrix ==0] = float("inf")
+        dist = np.full(adjacency_matrix.shape[0],float("inf"))
+        dist[graph.index_of(start_node)] = 0
+        valid_indices = [*range(graph.n_nodes)]
+        i = 0
 
-
-        while Q:
-            # short
-            v_index = np.argmin(dist)
-            print(v_index)
-            neighbourhood_v = np.where(graph.adjacency_matrix[v_index] != 0)
-            print(f"len(Q): {len(Q)}, {len(dijkstra_graph.nodes)}")
-            Q.remove(graph.nodes[v_index])
-            
-        for u_index in neighbourhood_v: # // where neighbor u has not yet been removed from Q.
-            alt = dist[v_index] + dijkstra_graph.get_weight((v_index, u_index))
-            if alt < dist[u_index]:               #// A shorter path to u has been found
-                dist[u_index]  = alt            #// Update distance of u 
+        while valid_indices:
+            d_index = np.argmin(dist[valid_indices])
+            v_index = valid_indices[d_index]
+            neighbourhood_v = [i for i,n in enumerate(graph.adjacency_matrix[v_index]) if n != 0]
+            valid_indices.remove(v_index)
+            for u_index in neighbourhood_v: # // where neighbor u has not yet been removed from Q.
+                alt = dist[v_index] + adjacency_matrix[v_index][u_index]
+                if alt < dist[u_index]:               #// A shorter path to u has been found
+                    dist[u_index]  = alt            #// Update distance of u 
 
         return dist
 
@@ -86,4 +83,7 @@ if __name__ == "__main__":
     #print(g.adjacency_matrix)
     print(floydwarshall(g))
     print(best_start_node_index(g))
-    #print(dijkstra(g, g.nodes[1]))
+    print(dijkstra(g, g.nodes[0]))
+    print(dijkstra(g, g.nodes[1]))
+    print(dijkstra(g, g.nodes[2]))
+    print(dijkstra(g, g.nodes[3]))
