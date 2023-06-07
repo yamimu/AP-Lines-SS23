@@ -72,7 +72,7 @@ class Graph:
                     self.adjacency_matrix[i][j] = w
                 self.adjacency_matrix[j][i] = w
 
-    def to_index(self,node):
+    def index_of(self,node):
         """
         returns the index of a node in this graph to be able to use
         indices when working with edges instead of always looking up
@@ -95,14 +95,14 @@ class Graph:
         :param self:
         :param edge:
         :return: i,j index of first and second node in edge
-        :raises: edge type missmatch; to_index errors
+        :raises: edge type missmatch; index_of errors
         """
         if type(edge[0]) != type(edge[1]):
             raise(ValueError("edge type missmatch"))
         if type(edge[0]) not in [Node, int]:
             raise(ValueError("edge must contain either nodes or indices"))
         if isinstance(edge[0],Node) :
-            i,j = self.to_index(edge[0]), self.to_index(edge[1])
+            i,j = self.index_of(edge[0]), self.index_of(edge[1])
         if isinstance(edge[0], int) :
             i,j = edge[0], edge[1]
         return i,j
@@ -142,12 +142,12 @@ class Graph:
             self.adjacency_matrix[j][i] = 0
             
             
-    def add_node(self,point,edges):
+    def add_node(self,point,edges = None):
         """
         adds new node into graph 
         :param self:
         :param point:
-        :param edges:
+        :param edges (default = None):
 
         :return: None
         :raises: None
@@ -177,27 +177,39 @@ class Graph:
         :return: None
         :raises: None
         """
-        j = self.to_index(point)
+        j = self.index_of(point)
         self.adjacency_matrix = np.delete(self.adjacency_matrix,j,axis=0)
         self.adjacency_matrix = np.delete(self.adjacency_matrix,j,axis=1)
         self.nodes.remove(point)
-        self.n_nodes -= 1
+        self.n_nodes = len(self.nodes)
+
+    def get_weight(self, edge):
+        """
+        returns the weight of the edge in this graph
+        :param self:
+        :param edge:
+
+        :return: weight
+        :raises: None
+        """
+        i,j = self.check_edge(edge)
+        return self.adjacency_matrix[i][j]
+    
             
 
 
     
         
-        
+if __name__ == "__main__":
 
+    node0 = Node(coord = [0,0])
+    node1 = Node(coord = [0,2])
+    node2 = Node(coord = [1,1])
+    node3 = Node(coord = [7,9])
 
-node0 = Node(coord = [0,0])
-node1 = Node(coord = [0,2])
-node2 = Node(coord = [1,1])
-node3 = Node(coord = [7,9])
-
-edges = [(0,1),(1,2)]
-g = Graph([node0,node1,node2], edges)
-g.add_node(node3,[0,1])
-print(g.adjacency_matrix)
-g.delete_node(node0)
-print(g.adjacency_matrix)
+    edges = [(0,1),(1,2)]
+    g = Graph([node0,node1,node2], edges)
+    g.add_node(node3,[0,1])
+    print(g.adjacency_matrix)
+    g.delete_node(node0)
+    print(g.adjacency_matrix)
