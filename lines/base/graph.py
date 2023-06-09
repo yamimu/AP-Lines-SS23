@@ -41,7 +41,7 @@ class Node:
        return len(self.coord)
     
 
-#TODO be able to add and remove nodes 
+
 class Graph:
     """
     This class represents weighted graphs using adjacency matrices
@@ -62,6 +62,11 @@ class Graph:
         self.undirected = undirected
         self.nodes = nodes
         self.adjacency_matrix = np.zeros((len(nodes),len(nodes)))
+        self.edge_list = []
+        self.start_nodes = []
+        
+        if edges != None:
+            self.edge_list = edges
         
         if edges != None:
             for edge in edges:
@@ -121,11 +126,12 @@ class Graph:
         :raises: Node
         """
         i,j = self.check_edge(edge)
-        if isinstance(w, None):
+        if w == None:
             w = self.nodes[i].euclidian_distance(self.nodes[j])
         self.adjacency_matrix[i][j] = w
         if self.undirected:
-            self.adjacency_matrix[j][i] = w
+            self.adjacency_matrix[j][i] = w   
+        
 
     def remove_edge(self,edge):
         """
@@ -140,6 +146,7 @@ class Graph:
         self.adjacency_matrix[i][j] = 0
         if self.undirected:
             self.adjacency_matrix[j][i] = 0
+        self.edge_list.remove((i,j))
             
             
     def add_node(self,point,edges = None):
@@ -155,17 +162,21 @@ class Graph:
 
         self.nodes.append(point)
         self.n_nodes = len(self.nodes)
+        if edges  != None:
+            if isinstance(edges[0],Node):
+                for i in range(0,len(edges)):
+                    edges[i] = self.index_of(edges[i])
+            tup_edge = []
+            for i in edges:
+                tup_edge.append((i,self.n_nodes-1))
+            self.edge_list.extend(tup_edge)
         adma = np.zeros((len(self.nodes),len(self.nodes)))
         adma[0:len(self.nodes)-1,0:len(self.nodes)-1] = self.adjacency_matrix 
         self.adjacency_matrix = adma
         if edges != None:
-            for i in edges:
-                j = self.n_nodes-1
-                w = self.nodes[i].euclidian_distance(self.nodes[j])
-                #add weights here
-                if self.undirected:
-                    self.adjacency_matrix[i][j] = w
-                self.adjacency_matrix[j][i] = w
+            for i in tup_edge:
+                self.add_edge(i)
+
             
             
     def delete_node(self,point):
@@ -178,6 +189,15 @@ class Graph:
         :raises: None
         """
         j = self.index_of(point)
+        edges= []
+        for i in range(0,g.n_nodes):
+            if self.adjacency_matrix[i][j] > 0:
+                if i < j:
+                    edges.append((i,j))
+                if j < i:
+                    edges.append((j,i))
+        for i in edges:
+            self.edge_list.remove(i)
         self.adjacency_matrix = np.delete(self.adjacency_matrix,j,axis=0)
         self.adjacency_matrix = np.delete(self.adjacency_matrix,j,axis=1)
         self.nodes.remove(point)
@@ -195,6 +215,17 @@ class Graph:
         i,j = self.check_edge(edge)
         return self.adjacency_matrix[i][j]
     
+    def add_start_node(self,point:Node):
+        """
+        adds an starting point to color on this graph
+        :param self:
+        :param point:
+
+        :return: None
+        :raises: None
+        """
+        self.start_nodes.append(point)
+    
             
 
 
@@ -209,7 +240,6 @@ if __name__ == "__main__":
 
     edges = [(0,1),(1,2)]
     g = Graph([node0,node1,node2], edges)
-    g.add_node(node3,[0,1])
-    print(g.adjacency_matrix)
-    g.delete_node(node0)
-    print(g.adjacency_matrix)
+    print(g.edge_list)
+    g.add_node(node3,[g.nodes[0],g.nodes[1]])
+    print(g.edge_list)

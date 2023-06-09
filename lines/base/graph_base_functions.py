@@ -1,33 +1,31 @@
-import numpy as np
-from graph import Graph
-from graph import Node
 
-def check_point_on_graph(g : Graph, point : Node) -> bool:
+from graph import Graph, Node
+
+def check_point_on_graph(g : Graph, point : Node) -> list:
     """
         checks if a given point is on the graph. First genarates an edge list 
-        with tuple of two Nodes with an edge. 
+        of Nodes with an edge. 
         Next it generates a straight-line function based on both connected nodes.
         It differentiats between vertical lines and lines with a gradient. 
         Afterwards the point ist tested if it is on a line by putting the x of 
         the point into the functions and checking if the y is the same as the 
         result. Then it is checked if the Point ist between the 2 Nodes that defined 
-        the function.  
+        the function. Returns the 2 Nodes the point is between of, one Node if point has same x and y or None.  
 
         :param g: the Graph class containing the graph to check.
         :param point: Node checked to be on graph.
 
-        :return: bool. True if point is on graph
+        :return: List of Nodes 
         :raises: Node
-        """
-    
+    """    
+    for i in g.nodes:
+        if i.coord[0] == point.coord[0]:
+            if i.coord[1] == point.coord[1]:    
+                return [i]
+            
     edges = []
-    matrix = g.adjacency_matrix
-    for i in range(0,g.n_nodes):
-        for j in range(0,g.n_nodes):
-            if matrix[i][j] > 0:
-                edges.append([g.nodes[i],g.nodes[j]])
-                matrix[i][j] = 0
-                matrix[j][i] = 0
+    for i in g.edge_list:
+        edges.append([g.nodes[i[0]],g.nodes[i[1]]])
     
     func_list=[]
     for i in edges:
@@ -52,24 +50,24 @@ def check_point_on_graph(g : Graph, point : Node) -> bool:
                 edge_points = edges[func_list.index(i)]
                 if edge_points[0].coord[1] < edge_points[1].coord[1]:
                    if edge_points[0].coord[1] <= point.coord[1] & point.coord[1] <= edge_points[1].coord[1]:
-                       return True
+                       return [edge_points[0],edge_points[1]]
                 if edge_points[0].coord[1] < edge_points[1].coord[1]:
                    if edge_points[1].coord[1] <= point.coord[1] & point.coord[1] <= edge_points[0].coord[1]:
-                       return True           
+                       return [edge_points[0],edge_points[1]]           
         if i[0] == False:
             if i[1](point.coord[0]) == point.coord[1]:   
                 edge_points = edges[func_list.index(i)]
                 if edge_points[0].coord[0] < edge_points[1].coord[0]:
                     if edge_points[0].coord[0] <= point.coord[0] & point.coord[0] <= edge_points[1].coord[0]:
-                       return True
+                       return [edge_points[0],edge_points[1]]
                 if edge_points[0].coord[0] < edge_points[1].coord[0]:
                     if edge_points[1].coord[0] <= point.coord[0] & point.coord[0] <= edge_points[0].coord[0]:
-                       return True
+                       return [edge_points[0],edge_points[1]]
                 if edge_points[0].coord[0] == edge_points[1].coord[0]:
                     if edge_points[0].coord[0] == point.coord[0]:
-                       return True
+                       return [edge_points[0],edge_points[1]]
 
-    return False
+    return None
 
 node0 = Node(coord = [0,0])
 node1 = Node(coord = [0,4])
