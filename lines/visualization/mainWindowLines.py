@@ -33,20 +33,20 @@ class Ui_Lines(object):
         self.pushButton_start.setFont(font)
         self.pushButton_start.setObjectName("pushButton_start")
         
-        self.graphicView = QtWidgets.QWidget(self.centralwidget)
-        self.graphicView.setGeometry(QtCore.QRect(20, 90, 791, 531))
-        #self.graphView = QtWidgets.QGraphicsView(self.centralwidget)
-        #self.graphView.setGeometry(QtCore.QRect(20, 90, 791, 531))
+        #initialize Widget to show a graph on a canvas
+        
+#        self.graphView = QtWidgets.QWidget(self.centralwidget)
+        self.graphView = QtWidgets.QGraphicsView(self.centralwidget)
+        self.graphView.setGeometry(QtCore.QRect(20, 90, 791, 531))
         font = QtGui.QFont()
         font.setPointSize(10)
-        #self.graphView.setFont(font)
-        self.graphicView.setFont(font)
-        #self.graphView.setObjectName("graphView")
-        self.graphicView.setObjectName("graphicView")
-        # embedding matplotlib canvas
-        layout = QtWidgets.QVBoxLayout(self.graphicView)
-        self.graphicView.canvas = FigureCanvas(plt.figure())
-        layout.addWidget(self.graphicView.canvas)
+        self.graphView.setFont(font)
+        self.graphView.setObjectName("graphView")
+        layout = QtWidgets.QVBoxLayout(self.graphView)
+        self.graphView.canvas = FigureCanvas(plt.figure())
+        layout.addWidget(self.graphView.canvas)
+
+        #create example networkx graph
         g = nx.Graph()
 
         g.add_edge(1, 2)
@@ -55,8 +55,9 @@ class Ui_Lines(object):
         g.add_edge(1, 4)
         g.add_edge(1, 5)
         
+        #draw graph and show on canvas
         nx.draw(g)
-        self.graphicView.canvas.draw_idle()
+        self.graphView.canvas.draw_idle()
 
         self.label_lines = QtWidgets.QLabel(self.centralwidget)
         self.label_lines.setGeometry(QtCore.QRect(380, 20, 321, 31))
