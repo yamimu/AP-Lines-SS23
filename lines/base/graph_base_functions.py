@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.linalg import norm
 import math
-from graph import Graph, Node
+from .graph import Graph, Node
 from vectors import *
 from mathutils.geometry import intersect_point_line
 

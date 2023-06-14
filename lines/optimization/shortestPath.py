@@ -1,8 +1,44 @@
 from ..base.graph import Graph, Node
+from ..base.graph_base_functions import check_point_on_graph
 import copy
 import numpy as np
 
-def best_start_node_index(graph):
+def best_start_point(graph):
+    """
+    calculates the best starting point on the graph, using the already implemented algorithms
+
+    :param graph:
+    :return: Node 
+    :raises: None
+    """
+    
+    #we need the index and 
+    res_floyd = floydwarshall(graph,True)
+    floydwarshall_matrix, paths = res[0], res[1]
+    max_floyd = np.max(floydwarshall_matrix,axis= 0)
+    best_index = np.argmin(max_floyd)
+    
+    #print(floydwarshall_matrix[best_index])
+    sorted_by_dist = np.argsort(floydwarshall_matrix[best_index])
+    a_index, b_index = sorted_by_dist[-1], sorted_by_dist[-2]
+    if graph.adjacency_matrix[best_index][a_index] ==\
+        graph.adjacency_matrix[best_index][b_index]:
+        return graph.nodes[best_index]
+    
+    walk_towards_A = 1/2 * (floydwarshall_matrix[best_index][a_index]\
+                        - floydwarshall_matrix[best_index][b_index])
+    
+    na_index = construct_path(best_index, a_index, *res_floyd)[1]
+    best_node ,na = graph.nodes[best_index], graph.nodes[na_index]
+    
+    coord_bp = walk_towards_A / graph.adjacency_matrix[best_index][na_index]\
+                * na.coord + best_node.coord
+    
+    return Node(coord= coord_bp)
+
+
+
+def best_start_node_index(graph):   
     """
     returns the best node to start from to color a graph within the minimum amout of time,
     decided by the shortest travel distance to the node the farthest away
@@ -18,7 +54,7 @@ def best_start_node_index(graph):
     return best_index
 
 # doesnt work yet
-def dijkstra(graph, start_node, return_paths = False):
+def dijkstra(graph, start_node):
         """
         compute the shortest distance from the start node to any node reachable using dijkstras algorithm
 
@@ -51,7 +87,10 @@ def dijkstra(graph, start_node, return_paths = False):
 
 
 
-def floydwarshall(graph):
+def floydwarshall(graph, return_paths = False):
+        
+        next = np.full_like(graph.adjacency_matrix,-1,int)
+        next[graph.adjacency_matrix.nonzero()] = graph.adjacency_matrix.nonzero()[1]
         M = np.full_like(graph.adjacency_matrix,float('inf'))
         for x in range(len(M)):
             for y in range(len(M[0])):
@@ -64,26 +103,47 @@ def floydwarshall(graph):
                 for j in range(len(M)):
                     newDistance = M[i][k] + M[k][j]
                     if newDistance < M[i][j]:
+                        next[i][j] = next[i][k]
                         M[i][j] = newDistance
+        if return_paths:
+             return (M, next)
         return M
 
+def construct_path(u,v, graph, next):
+    # If there's no path between
+    # node u and v, simply return
+    # an empty array
+    if (next[u][v] == -1):
+        return {}
+ 
+    # Storing the path in a vector
+    path = [u]
+    while (u != v):
+        u = next[u][v]
+        path.append(u)
+ 
+    return path
+     
         
 if __name__ == "__main__":
 
     node0 = Node(coord = [0,0])
-    node1 = Node(coord = [0,2])
-    node2 = Node(coord = [1,1])
-    node3 = Node(coord = [7,9])
+    node1 = Node(coord = [1,15])
+    node2 = Node(coord = [-4,1])
+    node3 = Node(coord = [15,1])
 
-    edges = [(0,1),(1,2)]
-    g = Graph([node0,node1,node2], edges)
-    g.add_node(node3,[0,1])
-    print(g.adjacency_matrix)
+    edges = [(0,1),(0,2),(1,2),(1,3)]
+    g = Graph([node0,node1,node2,node3], edges)
+
+    g2 = Graph([Node([-5,0]),\
+               Node([0,0]),\
+                Node([6,0])],\
+                    [(0,1),(1,2)])
+    
+    res = floydwarshall(g,True)
+
+    print(best_start_node_index(g))
+    print(best_start_point(g))
+    #print(g.adjacency_matrix)
     #g.delete_node(node0)
     #print(g.adjacency_matrix)
-    print(floydwarshall(g))
-    print(best_start_node_index(g))
-    print(dijkstra(g, g.nodes[0]))
-    print(dijkstra(g, g.nodes[1]))
-    print(dijkstra(g, g.nodes[2]))
-    print(dijkstra(g, g.nodes[3]))
