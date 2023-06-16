@@ -21,45 +21,47 @@ from ..base.graph import Graph, Node
 
 class Ui_Lines(object):
     def setupUi(self, Lines):
+
+        #setup main Window
         Lines.setObjectName("Lines")
         Lines.resize(1087, 757)
         font = QtGui.QFont()
         font.setPointSize(10)
         Lines.setFont(font)
+
+        #setup widgets
         self.centralwidget = QtWidgets.QWidget(Lines)
         self.centralwidget.setObjectName("centralwidget")
+        
+        self.graphView = QtWidgets.QWidget(self.centralwidget)
+        self.graphView.setGeometry(QtCore.QRect(20, 90, 791, 531))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.graphView.setFont(font)
+        self.graphView.setObjectName("graphView")
+
+        #setup layout of graphView
+        layout = QtWidgets.QVBoxLayout(self.graphView)
+        self.figure = plt.figure()
+        self.graphView.canvas = FigureCanvas(self.figure)
+        layout.addWidget(self.graphView.canvas)
+
+        #setup buttons
         self.pushButton_start = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_start.setGeometry(QtCore.QRect(900, 260, 93, 28))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.pushButton_start.setFont(font)
         self.pushButton_start.setObjectName("pushButton_start")
-        
-        #initialize Widget to show a graph on a canvas
-        
-        self.graphView = QtWidgets.QWidget(self.centralwidget)
-#        self.graphView = QtWidgets.QGraphicsView(self.centralwidget)
-        self.graphView.setGeometry(QtCore.QRect(20, 90, 791, 531))
+
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(960, 590, 93, 28))
         font = QtGui.QFont()
         font.setPointSize(10)
-        self.graphView.setFont(font)
-        self.graphView.setObjectName("graphView")
-        layout = QtWidgets.QVBoxLayout(self.graphView)
-        self.figure = plt.figure()
-        self.graphView.canvas = FigureCanvas(self.figure)
-        layout.addWidget(self.graphView.canvas)
+        self.pushButton.setFont(font)
+        self.pushButton.setObjectName("pushButton")
 
-        #create example networkx graph
-        g = self.createGraph()
-        g = g.toNx()
-        
-        #draw graph with axes and show on canvas
-        ax = self.figure.add_subplot()
-        nx.draw_networkx(g, nx.get_node_attributes(g, 'pos'), ax=ax)
-        ax.set_axis_on()
-        ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
-        self.graphView.canvas.draw_idle()
-
+        #setup labels
         self.label_lines = QtWidgets.QLabel(self.centralwidget)
         self.label_lines.setGeometry(QtCore.QRect(380, 20, 321, 31))
         self.label_lines.setAlignment(QtCore.Qt.AlignCenter)
@@ -70,49 +72,53 @@ class Ui_Lines(object):
         self.label_lines.setFont(font)
         self.label_lines.setScaledContents(False)
         self.label_lines.setObjectName("label_lines")
+
         self.label_start = QtWidgets.QLabel(self.centralwidget)
         self.label_start.setGeometry(QtCore.QRect(820, 110, 101, 31))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.label_start.setFont(font)
         self.label_start.setObjectName("label_start")
-        self.textEdit_x = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit_x.setGeometry(QtCore.QRect(860, 150, 191, 31))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.textEdit_x.setFont(font)
-        self.textEdit_x.setObjectName("textEdit_x")
+
         self.label_x = QtWidgets.QLabel(self.centralwidget)
         self.label_x.setGeometry(QtCore.QRect(830, 150, 21, 31))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_x.setFont(font)
         self.label_x.setObjectName("label_x")
+
         self.label_y = QtWidgets.QLabel(self.centralwidget)
         self.label_y.setGeometry(QtCore.QRect(830, 200, 21, 31))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_y.setFont(font)
         self.label_y.setObjectName("label_y")
+
+        self.label_winner = QtWidgets.QLabel(self.centralwidget)
+        self.label_winner.setGeometry(QtCore.QRect(830, 320, 71, 21))
+        self.label_winner.setObjectName("label_winner")
+
+        self.label_winningPlayer = QtWidgets.QLabel(self.centralwidget)
+        self.label_winningPlayer.setGeometry(QtCore.QRect(900, 370, 101, 21))
+        self.label_winningPlayer.setText("")
+        self.label_winningPlayer.setObjectName("label_winningPlayer")
+
+        #setup text edit fields
+        self.textEdit_x = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit_x.setGeometry(QtCore.QRect(860, 150, 191, 31))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.textEdit_x.setFont(font)
+        self.textEdit_x.setObjectName("textEdit_x")
+        
         self.textEdit_y = QtWidgets.QTextEdit(self.centralwidget)
         self.textEdit_y.setGeometry(QtCore.QRect(860, 200, 191, 31))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.textEdit_y.setFont(font)
         self.textEdit_y.setObjectName("textEdit_y")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(960, 590, 93, 28))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.pushButton.setFont(font)
-        self.pushButton.setObjectName("pushButton")
-        self.label_winner = QtWidgets.QLabel(self.centralwidget)
-        self.label_winner.setGeometry(QtCore.QRect(830, 320, 71, 21))
-        self.label_winner.setObjectName("label_winner")
-        self.label_winningPlayer = QtWidgets.QLabel(self.centralwidget)
-        self.label_winningPlayer.setGeometry(QtCore.QRect(900, 370, 101, 21))
-        self.label_winningPlayer.setText("")
-        self.label_winningPlayer.setObjectName("label_winningPlayer")
+        
+        #setup menubar and statusbar
         Lines.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(Lines)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1087, 29))
@@ -121,6 +127,17 @@ class Ui_Lines(object):
         self.statusbar = QtWidgets.QStatusBar(Lines)
         self.statusbar.setObjectName("statusbar")
         Lines.setStatusBar(self.statusbar)
+
+        #create networkx graph
+        g = self.createGraph()
+        g = g.toNx()
+        
+        #draw graph with axes
+        ax = self.figure.add_subplot()
+        nx.draw_networkx(g, nx.get_node_attributes(g, 'pos'), ax=ax, labels=nx.get_node_attributes(g, 'label'))
+        ax.set_axis_on()
+        ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+        self.graphView.canvas.draw_idle()
 
         self.retranslateUi(Lines)
         QtCore.QMetaObject.connectSlotsByName(Lines)
