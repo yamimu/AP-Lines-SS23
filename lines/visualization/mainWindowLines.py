@@ -62,7 +62,7 @@ class Ui_Lines(object):
         font.setPointSize(10)
         self.pushButton_nextLevel.setFont(font)
         self.pushButton_nextLevel.setObjectName("pushButton")
-        #self.pushButton_nextLevel.clicked.connect(self.drawNewGraph())
+        self.pushButton_nextLevel.clicked.connect(self.nextLevel)
 
         #setup labels
         self.label_lines = QtWidgets.QLabel(self.centralwidget)
@@ -171,6 +171,7 @@ class Ui_Lines(object):
         :param self:
         """
         if level < len(self.graphs):
+            self.level = level
             self.figure.clear()
             g = self.graphs[level].toNx()
             ax = self.figure.add_subplot()
@@ -178,6 +179,9 @@ class Ui_Lines(object):
             ax.set_axis_on()
             ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
             self.graphView.canvas.draw_idle()
+
+    def nextLevel(self):
+        self.drawGraph(self.level+1)
 
 if __name__ == '__main__':
 
