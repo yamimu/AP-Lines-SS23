@@ -23,6 +23,7 @@ class Ui_Lines(object):
 
         self.level = 0
         self.graphs = []
+        self.g = None
 
         #setup main Window
         Lines.setObjectName("Lines")
@@ -55,6 +56,7 @@ class Ui_Lines(object):
         font.setPointSize(10)
         self.pushButton_start.setFont(font)
         self.pushButton_start.setObjectName("pushButton_start")
+        self.pushButton_start.clicked.connect(self.start)
 
         self.pushButton_nextLevel = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_nextLevel.setGeometry(QtCore.QRect(960, 590, 93, 28))
@@ -106,20 +108,26 @@ class Ui_Lines(object):
         self.label_winningPlayer.setText("")
         self.label_winningPlayer.setObjectName("label_winningPlayer")
 
-        #setup text edit fields
-        self.textEdit_x = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit_x.setGeometry(QtCore.QRect(860, 150, 191, 31))
+        #setup edit fields
+        self.lineEdit_x = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_x.setGeometry(QtCore.QRect(860, 150, 191, 31))
         font = QtGui.QFont()
         font.setPointSize(10)
-        self.textEdit_x.setFont(font)
-        self.textEdit_x.setObjectName("textEdit_x")
+        self.lineEdit_x.setFont(font)
+        self.lineEdit_x.setObjectName("lineEdit_x")
+        self.lineEdit_x.setMaxLength(15)
+        self.lineEdit_x.setEchoMode(0)
+        self.onlyDouble = QtGui.QDoubleValidator()
+        self.lineEdit_x.setValidator(self.onlyDouble)
         
-        self.textEdit_y = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit_y.setGeometry(QtCore.QRect(860, 200, 191, 31))
+        self.lineEdit_y = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_y.setGeometry(QtCore.QRect(860, 200, 191, 31))
         font = QtGui.QFont()
         font.setPointSize(10)
-        self.textEdit_y.setFont(font)
-        self.textEdit_y.setObjectName("textEdit_y")
+        self.lineEdit_y.setFont(font)
+        self.lineEdit_y.setObjectName("lineEdit_y")
+        self.lineEdit_y.setMaxLength(15)
+        self.lineEdit_y.setValidator(self.onlyDouble)
         
         #setup menubar and statusbar
         Lines.setCentralWidget(self.centralwidget)
@@ -147,7 +155,6 @@ class Ui_Lines(object):
         self.label_x.setText(_translate("Lines", "x:"))
         self.label_y.setText(_translate("Lines", "y:"))
         self.pushButton_nextLevel.setText(_translate("Lines", "Next Level"))
-#        self.label_winner.setText(_translate("Lines", "Winner:"))
 
     def createGraphs(self):
         node0 = Node(coord = [0,0])
@@ -169,19 +176,42 @@ class Ui_Lines(object):
         """
         draw a new graph with axes on the canvas
         :param self:
+        :param level: position of graph in graphs[]
+
+        :return: None
+        :raises: None
         """
         if level < len(self.graphs):
             self.level = level
             self.figure.clear()
-            g = self.graphs[level].toNx()
+            self.g = self.graphs[level]
+            g = self.g.toNx()
+
+            pos = nx.get_node_attributes(g, 'pos')
             ax = self.figure.add_subplot()
-            nx.draw_networkx(g, nx.get_node_attributes(g, 'pos'), ax=ax, labels=nx.get_node_attributes(g, 'label'))
+            labels = nx.get_node_attributes(g, 'label')
+            
+            nx.draw_networkx(g, pos, ax=ax, labels=labels)
             ax.set_axis_on()
             ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
             self.graphView.canvas.draw_idle()
 
     def nextLevel(self):
         self.drawGraph(self.level+1)
+
+    def start(self):
+        """
+        add start node and start animation
+        :param self:
+
+        :return: None
+        :raises: None
+        """
+        x = self.lineEdit_x.text()
+        y = self.lineEdit_y.text()
+        self.g.add_start_node(Node([x,y]))
+        #TODO: start animation
+
 
 if __name__ == '__main__':
 
