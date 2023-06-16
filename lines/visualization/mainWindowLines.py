@@ -37,7 +37,7 @@ class Ui_Lines(object):
         self.centralwidget.setObjectName("centralwidget")
         
         self.graphView = QtWidgets.QWidget(self.centralwidget)
-        self.graphView.setGeometry(QtCore.QRect(20, 90, 791, 531))
+        self.graphView.setGeometry(QtCore.QRect(20, 90, 791, 536))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.graphView.setFont(font)
@@ -65,6 +65,15 @@ class Ui_Lines(object):
         self.pushButton_nextLevel.setFont(font)
         self.pushButton_nextLevel.setObjectName("pushButton")
         self.pushButton_nextLevel.clicked.connect(self.nextLevel)
+
+        self.pushButton_preLevel = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_preLevel.setGeometry(QtCore.QRect(830, 590, 93, 28))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.pushButton_preLevel.setFont(font)
+        self.pushButton_preLevel.setObjectName("pushButton")
+        self.pushButton_preLevel.clicked.connect(self.preLevel)
+        self.pushButton_preLevel.setEnabled(False)
 
         #setup labels
         self.label_lines = QtWidgets.QLabel(self.centralwidget)
@@ -150,11 +159,12 @@ class Ui_Lines(object):
         _translate = QtCore.QCoreApplication.translate
         Lines.setWindowTitle(_translate("Lines", "Lines"))
         self.pushButton_start.setText(_translate("Lines", "Start"))
-        self.label_lines.setText(_translate("Lines", "Lines - Level 1"))
+        self.label_lines.setText(_translate("Lines", "Lines - Level 0"))
         self.label_start.setText(_translate("Lines", "Startpunkt:"))
         self.label_x.setText(_translate("Lines", "x:"))
         self.label_y.setText(_translate("Lines", "y:"))
         self.pushButton_nextLevel.setText(_translate("Lines", "Next Level"))
+        self.pushButton_preLevel.setText(_translate("Lines", "Previous Level"))
 
     def createGraphs(self):
         node0 = Node(coord = [0,0])
@@ -181,7 +191,7 @@ class Ui_Lines(object):
         :return: None
         :raises: None
         """
-        if level < len(self.graphs):
+        if level < len(self.graphs) and level >= 0:
             self.level = level
             self.figure.clear()
             self.g = self.graphs[level]
@@ -195,9 +205,22 @@ class Ui_Lines(object):
             ax.set_axis_on()
             ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
             self.graphView.canvas.draw_idle()
+            self.label_lines.setText(f"Lines - Level {level}")
+
 
     def nextLevel(self):
         self.drawGraph(self.level+1)
+
+        self.pushButton_preLevel.setEnabled(True)
+        if self.level+1 >= len(self.graphs):
+            self.pushButton_nextLevel.setEnabled(False)
+
+    def preLevel(self):
+        self.drawGraph(self.level-1)
+
+        self.pushButton_nextLevel.setEnabled(True)
+        if self.level-1 < 0:
+            self.pushButton_preLevel.setEnabled(False)
 
     def start(self):
         """
