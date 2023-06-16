@@ -1,7 +1,6 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-import matplotlib.axes as axes
 
 # shortest path
 
@@ -241,7 +240,7 @@ class Graph:
 
         if(self.nodes):
             for i in range(self.n_nodes):
-                g.add_node(i, pos = self.nodes[i].coord)
+                g.add_node(i, pos = self.nodes[i].coord, label=str(self.nodes[i].coord))
         
         if(self.edge_list):
             for edge in self.edge_list:
