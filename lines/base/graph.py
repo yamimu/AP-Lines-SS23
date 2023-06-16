@@ -19,12 +19,12 @@ class Node:
         :return: None
         :raises: None
         """
-        if coord != None:
+        if coord is not None:
             if type(coord) != np.array:
                 coord = np.array(coord)
             self.coord = coord
         else:
-            self.coord = [0,0]
+            self.coord = np.array([0,0])
 
     def euclidian_distance(self,node):
         ''' 
