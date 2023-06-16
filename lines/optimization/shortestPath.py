@@ -1,14 +1,22 @@
 from ..base.graph import Graph, Node
-from ..base.graph_base_functions import check_point_on_graph
+from ..base.graph_base_functions import find_point_on_graph
 import copy
 import numpy as np
 
-def best_start_point(graph):
+def best_start_point(graph,return_coords_not_node = False):
     """
-    calculates the best starting point on the graph, using the already implemented algorithms
+    given a graph this function calculates the point on the graph, node or edge,
+    tha has the smallest possible distance to the point(a) the farthest away regarding
+    shortest paths. 
+    This algorithm uses the propertie that when walking towards a,
+    we walk away from the second farthest node b. when a and b are equally far away,
+    our result is a node on the graph calculated like best_start_node_index
+    to find our optimal point we walk half the distance of the difference between
+    the distances of a and b from the best_start_node towards the first node(na)
+    on the path to a
 
     :param graph:
-    :return: Node 
+    :return: Node
     :raises: None
     """
     
@@ -30,11 +38,11 @@ def best_start_point(graph):
     
     na_index = construct_path(best_index, a_index, *res_floyd)[1]
     best_node ,na = graph.nodes[best_index], graph.nodes[na_index]
-    
+
     coord_bp = walk_towards_A / graph.adjacency_matrix[best_index][na_index]\
                 * na.coord + best_node.coord
     
-    return Node(coord= coord_bp)
+    return  Node(coord= coord_bp)
 
 
 
@@ -144,6 +152,7 @@ if __name__ == "__main__":
 
     print(best_start_node_index(g))
     print(best_start_point(g))
+    print(floydwarshall(g,True)[1])
     #print(g.adjacency_matrix)
     #g.delete_node(node0)
     #print(g.adjacency_matrix)

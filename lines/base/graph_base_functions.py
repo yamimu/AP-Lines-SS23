@@ -1,12 +1,9 @@
 import numpy as np
 from numpy.linalg import norm
 import math
-<<<<<<< Updated upstream
 from .graph import Graph, Node
 from vectors import *
-=======
-from graph import Graph, Node
->>>>>>> Stashed changes
+
 from mathutils.geometry import intersect_point_line
 
 def shortest_distance(edge_point1, edge_point2, point):
