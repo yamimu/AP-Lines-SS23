@@ -14,7 +14,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
-import networkx as nx
+import matplotlib.axes as axes
+import networkx as nx 
+from ..base.graph import Graph, Node
 
 
 class Ui_Lines(object):
@@ -35,28 +37,27 @@ class Ui_Lines(object):
         
         #initialize Widget to show a graph on a canvas
         
-#        self.graphView = QtWidgets.QWidget(self.centralwidget)
-        self.graphView = QtWidgets.QGraphicsView(self.centralwidget)
+        self.graphView = QtWidgets.QWidget(self.centralwidget)
+#        self.graphView = QtWidgets.QGraphicsView(self.centralwidget)
         self.graphView.setGeometry(QtCore.QRect(20, 90, 791, 531))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.graphView.setFont(font)
         self.graphView.setObjectName("graphView")
         layout = QtWidgets.QVBoxLayout(self.graphView)
-        self.graphView.canvas = FigureCanvas(plt.figure())
+        self.figure = plt.figure()
+        self.graphView.canvas = FigureCanvas(self.figure)
         layout.addWidget(self.graphView.canvas)
 
         #create example networkx graph
-        g = nx.Graph()
-
-        g.add_edge(1, 2)
-        g.add_edge(2, 3)
-        g.add_edge(3, 4)
-        g.add_edge(1, 4)
-        g.add_edge(1, 5)
+        g = self.createGraph()
+        g = g.toNx()
         
-        #draw graph and show on canvas
-        nx.draw(g)
+        #draw graph with axes and show on canvas
+        ax = self.figure.add_subplot()
+        nx.draw_networkx(g, nx.get_node_attributes(g, 'pos'), ax=ax)
+        ax.set_axis_on()
+        ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
         self.graphView.canvas.draw_idle()
 
         self.label_lines = QtWidgets.QLabel(self.centralwidget)
@@ -135,7 +136,21 @@ class Ui_Lines(object):
         self.pushButton.setText(_translate("Lines", "Next Level"))
 #        self.label_winner.setText(_translate("Lines", "Winner:"))
 
+    def createGraph(self):
+        node0 = Node(coord = [0,0])
+        node1 = Node(coord = [0,4])
+        node2 = Node(coord = [4,4])
+        node3 = Node(coord = [4,0])
+        node4 = Node(coord=[5,0])
+        edges = [(0,1),(0,3),(0,2),(1,2),(2,3)]
+        g = Graph([node0,node1,node2,node3], edges)
+        g.add_node(node4,[g.nodes[0],g.nodes[1]])
+
+        return g
+
 if __name__ == '__main__':
+
+    sys.path.append('..')
 
     app = QApplication(sys.argv)
     Lines = QMainWindow()
