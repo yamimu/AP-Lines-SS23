@@ -14,13 +14,15 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
-import matplotlib.axes as axes
 import networkx as nx 
 from ..base.graph import Graph, Node
 
 
 class Ui_Lines(object):
     def setupUi(self, Lines):
+
+        self.level = 0
+        self.graphs = []
 
         #setup main Window
         Lines.setObjectName("Lines")
@@ -54,12 +56,13 @@ class Ui_Lines(object):
         self.pushButton_start.setFont(font)
         self.pushButton_start.setObjectName("pushButton_start")
 
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(960, 590, 93, 28))
+        self.pushButton_nextLevel = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_nextLevel.setGeometry(QtCore.QRect(960, 590, 93, 28))
         font = QtGui.QFont()
         font.setPointSize(10)
-        self.pushButton.setFont(font)
-        self.pushButton.setObjectName("pushButton")
+        self.pushButton_nextLevel.setFont(font)
+        self.pushButton_nextLevel.setObjectName("pushButton")
+        #self.pushButton_nextLevel.clicked.connect(self.drawNewGraph())
 
         #setup labels
         self.label_lines = QtWidgets.QLabel(self.centralwidget)
@@ -129,15 +132,8 @@ class Ui_Lines(object):
         Lines.setStatusBar(self.statusbar)
 
         #create networkx graph
-        g = self.createGraph()
-        g = g.toNx()
-        
-        #draw graph with axes
-        ax = self.figure.add_subplot()
-        nx.draw_networkx(g, nx.get_node_attributes(g, 'pos'), ax=ax, labels=nx.get_node_attributes(g, 'label'))
-        ax.set_axis_on()
-        ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
-        self.graphView.canvas.draw_idle()
+        self.createGraphs()
+        self.drawGraph(0)
 
         self.retranslateUi(Lines)
         QtCore.QMetaObject.connectSlotsByName(Lines)
@@ -150,20 +146,38 @@ class Ui_Lines(object):
         self.label_start.setText(_translate("Lines", "Startpunkt:"))
         self.label_x.setText(_translate("Lines", "x:"))
         self.label_y.setText(_translate("Lines", "y:"))
-        self.pushButton.setText(_translate("Lines", "Next Level"))
+        self.pushButton_nextLevel.setText(_translate("Lines", "Next Level"))
 #        self.label_winner.setText(_translate("Lines", "Winner:"))
 
-    def createGraph(self):
+    def createGraphs(self):
         node0 = Node(coord = [0,0])
         node1 = Node(coord = [0,4])
         node2 = Node(coord = [4,4])
         node3 = Node(coord = [4,0])
         node4 = Node(coord=[5,0])
-        edges = [(0,1),(0,3),(0,2),(1,2),(2,3)]
-        g = Graph([node0,node1,node2,node3], edges)
-        g.add_node(node4,[g.nodes[0],g.nodes[1]])
+        edges1 = [(0,1),(0,3),(0,2),(1,2),(2,3)]
+        g1 = Graph([node0,node1,node2,node3], edges1)
+        g1.add_node(node4,[g1.nodes[0],g1.nodes[1]])
+        self.graphs.append(g1)
 
-        return g
+        node5 = Node(coord = [2,2.1])
+        edges2 = [(0,1),(0,3),(0,2),(2,3),]
+        g2 = Graph([node5,node1,node2,node3], edges2)
+        self.graphs.append(g2)
+    
+    def drawGraph(self, level):
+        """
+        draw a new graph with axes on the canvas
+        :param self:
+        """
+        if level < len(self.graphs):
+            self.figure.clear()
+            g = self.graphs[level].toNx()
+            ax = self.figure.add_subplot()
+            nx.draw_networkx(g, nx.get_node_attributes(g, 'pos'), ax=ax, labels=nx.get_node_attributes(g, 'label'))
+            ax.set_axis_on()
+            ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+            self.graphView.canvas.draw_idle()
 
 if __name__ == '__main__':
 
