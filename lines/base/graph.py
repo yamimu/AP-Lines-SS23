@@ -25,6 +25,9 @@ class Node:
         else:
             self.coord = np.array([0,0])
 
+    def __str__(self) -> str:
+        return f"({self.coord[0]},{self.coord[1]})"
+
     def euclidian_distance(self,node):
         ''' 
         calculates the euclidian distance between self and
@@ -240,7 +243,7 @@ class Graph:
 
         if(self.nodes):
             for i in range(self.n_nodes):
-                g.add_node(i, pos = self.nodes[i].coord, label=str(self.nodes[i].coord))
+                g.add_node(i, pos = self.nodes[i].coord, label=str(self.nodes[i]))
         
         if(self.edge_list):
             for edge in self.edge_list:
