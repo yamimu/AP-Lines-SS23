@@ -1,7 +1,6 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-import matplotlib.axes as axes
 
 # shortest path
 
@@ -230,11 +229,18 @@ class Graph:
         self.start_nodes.append(point)
 
     def toNx(self):
+        """
+        create a networkx Graph of this graph
+        :param self:
+
+        :return: networkx Graph
+        :raises: None
+        """
         g = nx.Graph()
 
         if(self.nodes):
             for i in range(self.n_nodes):
-                g.add_node(i, pos = self.nodes[i].coord)
+                g.add_node(i, pos = self.nodes[i].coord, label=str(self.nodes[i].coord))
         
         if(self.edge_list):
             for edge in self.edge_list:
@@ -260,7 +266,6 @@ if __name__ == "__main__":
     g.add_node(node3,[g.nodes[0],g.nodes[1]])
     #print(g.edge_list)
 
-    #ax = axes.Axes()
     nxGraph = g.toNx()
     nx.draw_networkx(nxGraph, nx.get_node_attributes(nxGraph, 'pos'))
     plt.show()
