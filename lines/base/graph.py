@@ -1,4 +1,7 @@
 import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+import matplotlib.axes as axes
 
 # shortest path
 
@@ -225,6 +228,19 @@ class Graph:
         :raises: None
         """
         self.start_nodes.append(point)
+
+    def toNx(self):
+        g = nx.Graph()
+
+        if(self.nodes):
+            for i in range(self.n_nodes):
+                g.add_node(i, pos = self.nodes[i].coord)
+        
+        if(self.edge_list):
+            for edge in self.edge_list:
+                g.add_edge(edge[0],edge[1], length = self.adjacency_matrix[edge[0]][edge[1]])
+
+        return g
     
             
 
@@ -234,12 +250,17 @@ class Graph:
 if __name__ == "__main__":
 
     node0 = Node(coord = [0,0])
-    node1 = Node(coord = [0,2])
-    node2 = Node(coord = [1,1])
-    node3 = Node(coord = [7,9])
-
-    edges = [(0,1),(1,2)]
-    g = Graph([node0,node1,node2], edges)
-    print(g.edge_list)
+    node1 = Node(coord = [0,4])
+    node2 = Node(coord = [4,4])
+    node3 = Node(coord = [4,0])
+    node4 = Node(coord=[5,0])
+    edges = [(0,1),(0,3),(0,2),(1,2),(2,3)]
+    g = Graph([node0,node1,node2,node3], edges)
+    #print(g.edge_list)
     g.add_node(node3,[g.nodes[0],g.nodes[1]])
-    print(g.edge_list)
+    #print(g.edge_list)
+
+    #ax = axes.Axes()
+    nxGraph = g.toNx()
+    nx.draw_networkx(nxGraph, nx.get_node_attributes(nxGraph, 'pos'))
+    plt.show()
