@@ -230,6 +230,13 @@ class Graph:
         self.start_nodes.append(point)
 
     def toNx(self):
+        """
+        create a networkx Graph of this graph
+        :param self:
+
+        :return: networkx Graph
+        :raises: None
+        """
         g = nx.Graph()
 
         if(self.nodes):
@@ -260,7 +267,6 @@ if __name__ == "__main__":
     g.add_node(node3,[g.nodes[0],g.nodes[1]])
     #print(g.edge_list)
 
-    #ax = axes.Axes()
     nxGraph = g.toNx()
     nx.draw_networkx(nxGraph, nx.get_node_attributes(nxGraph, 'pos'))
     plt.show()
