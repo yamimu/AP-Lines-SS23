@@ -3,7 +3,7 @@ from ..base.graph_base_functions import find_point_on_graph
 import copy
 import numpy as np
 
-def best_start_point(graph,return_coords_not_node = False):
+def best_start_point(graph):
     """
     given a graph this function calculates the point on the graph, node or edge,
     tha has the smallest possible distance to the point(a) the farthest away regarding

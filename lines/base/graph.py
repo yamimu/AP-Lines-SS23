@@ -60,9 +60,9 @@ class Graph:
         :return: Graph
         :raises: check_edge errors
         """
-        self.n_nodes = len(nodes)
+        self.nodes = list(nodes)
+        self.n_nodes = len(self.nodes)
         self.undirected = undirected
-        self.nodes = nodes
         self.adjacency_matrix = np.zeros((len(nodes),len(nodes)))
         self.edge_list = []
         self.start_nodes = []
@@ -161,7 +161,6 @@ class Graph:
         :return: None
         :raises: None
         """
-
         self.nodes.append(point)
         self.n_nodes = len(self.nodes)
         if edges  != None:

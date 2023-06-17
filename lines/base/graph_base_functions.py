@@ -215,13 +215,14 @@ def find_point_on_graph(g : Graph, point : Node):
     
     return None     
 
-node0 = Node(coord = [0,0])
-node1 = Node(coord = [0,4])
-node2 = Node(coord = [4,4])
-node3 = Node(coord = [4,0])
-node4 = Node(coord = [2,2.1])
-edges = [(0,1),(0,3),(0,2),(1,2),(2,3)]
-g = Graph([node0,node1,node2,node3], edges)
-nod= find_point_on_graph(g,node4)
-print (nod)
+if __name__ == "__main__":
+    node0 = Node(coord = [0,0])
+    node1 = Node(coord = [0,4])
+    node2 = Node(coord = [4,4])
+    node3 = Node(coord = [4,0])
+    node4 = Node(coord = [2,2.1])
+    edges = [(0,1),(0,3),(0,2),(1,2),(2,3)]
+    g = Graph([node0,node1,node2,node3], edges)
+    nod= find_point_on_graph(g,node4)
+    print (nod)
 
