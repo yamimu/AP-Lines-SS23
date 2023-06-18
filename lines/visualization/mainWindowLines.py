@@ -23,6 +23,7 @@ class Ui_Lines(object):
 
         self.level = 0
         self.graphs = []
+        self.g = None
 
         #setup main Window
         Lines.setObjectName("Lines")
@@ -36,7 +37,7 @@ class Ui_Lines(object):
         self.centralwidget.setObjectName("centralwidget")
         
         self.graphView = QtWidgets.QWidget(self.centralwidget)
-        self.graphView.setGeometry(QtCore.QRect(20, 90, 791, 531))
+        self.graphView.setGeometry(QtCore.QRect(20, 90, 791, 536))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.graphView.setFont(font)
@@ -55,6 +56,7 @@ class Ui_Lines(object):
         font.setPointSize(10)
         self.pushButton_start.setFont(font)
         self.pushButton_start.setObjectName("pushButton_start")
+        self.pushButton_start.clicked.connect(self.start)
 
         self.pushButton_nextLevel = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_nextLevel.setGeometry(QtCore.QRect(960, 590, 93, 28))
@@ -63,6 +65,15 @@ class Ui_Lines(object):
         self.pushButton_nextLevel.setFont(font)
         self.pushButton_nextLevel.setObjectName("pushButton")
         self.pushButton_nextLevel.clicked.connect(self.nextLevel)
+
+        self.pushButton_preLevel = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_preLevel.setGeometry(QtCore.QRect(830, 590, 93, 28))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.pushButton_preLevel.setFont(font)
+        self.pushButton_preLevel.setObjectName("pushButton")
+        self.pushButton_preLevel.clicked.connect(self.preLevel)
+        self.pushButton_preLevel.setEnabled(False)
 
         #setup labels
         self.label_lines = QtWidgets.QLabel(self.centralwidget)
@@ -106,20 +117,26 @@ class Ui_Lines(object):
         self.label_winningPlayer.setText("")
         self.label_winningPlayer.setObjectName("label_winningPlayer")
 
-        #setup text edit fields
-        self.textEdit_x = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit_x.setGeometry(QtCore.QRect(860, 150, 191, 31))
+        #setup edit fields
+        self.lineEdit_x = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_x.setGeometry(QtCore.QRect(860, 150, 191, 31))
         font = QtGui.QFont()
         font.setPointSize(10)
-        self.textEdit_x.setFont(font)
-        self.textEdit_x.setObjectName("textEdit_x")
+        self.lineEdit_x.setFont(font)
+        self.lineEdit_x.setObjectName("lineEdit_x")
+        self.lineEdit_x.setMaxLength(15)
+        self.lineEdit_x.setEchoMode(0)
+        self.onlyDouble = QtGui.QDoubleValidator()
+        self.lineEdit_x.setValidator(self.onlyDouble)
         
-        self.textEdit_y = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit_y.setGeometry(QtCore.QRect(860, 200, 191, 31))
+        self.lineEdit_y = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_y.setGeometry(QtCore.QRect(860, 200, 191, 31))
         font = QtGui.QFont()
         font.setPointSize(10)
-        self.textEdit_y.setFont(font)
-        self.textEdit_y.setObjectName("textEdit_y")
+        self.lineEdit_y.setFont(font)
+        self.lineEdit_y.setObjectName("lineEdit_y")
+        self.lineEdit_y.setMaxLength(15)
+        self.lineEdit_y.setValidator(self.onlyDouble)
         
         #setup menubar and statusbar
         Lines.setCentralWidget(self.centralwidget)
@@ -142,12 +159,12 @@ class Ui_Lines(object):
         _translate = QtCore.QCoreApplication.translate
         Lines.setWindowTitle(_translate("Lines", "Lines"))
         self.pushButton_start.setText(_translate("Lines", "Start"))
-        self.label_lines.setText(_translate("Lines", "Lines - Level 1"))
+        self.label_lines.setText(_translate("Lines", "Lines - Level 0"))
         self.label_start.setText(_translate("Lines", "Startpunkt:"))
         self.label_x.setText(_translate("Lines", "x:"))
         self.label_y.setText(_translate("Lines", "y:"))
         self.pushButton_nextLevel.setText(_translate("Lines", "Next Level"))
-#        self.label_winner.setText(_translate("Lines", "Winner:"))
+        self.pushButton_preLevel.setText(_translate("Lines", "Previous Level"))
 
     def createGraphs(self):
         node0 = Node(coord = [0,0])
@@ -169,19 +186,55 @@ class Ui_Lines(object):
         """
         draw a new graph with axes on the canvas
         :param self:
+        :param level: position of graph in graphs[]
+
+        :return: None
+        :raises: None
         """
-        if level < len(self.graphs):
+        if level < len(self.graphs) and level >= 0:
             self.level = level
             self.figure.clear()
-            g = self.graphs[level].toNx()
+            self.g = self.graphs[level]
+            g = self.g.toNx()
+
+            pos = nx.get_node_attributes(g, 'pos')
             ax = self.figure.add_subplot()
-            nx.draw_networkx(g, nx.get_node_attributes(g, 'pos'), ax=ax, labels=nx.get_node_attributes(g, 'label'))
+            labels = nx.get_node_attributes(g, 'label')
+            
+            nx.draw_networkx(g, pos, ax=ax, labels=labels)
             ax.set_axis_on()
             ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
             self.graphView.canvas.draw_idle()
+            self.label_lines.setText(f"Lines - Level {level}")
+
 
     def nextLevel(self):
         self.drawGraph(self.level+1)
+
+        self.pushButton_preLevel.setEnabled(True)
+        if self.level+1 >= len(self.graphs):
+            self.pushButton_nextLevel.setEnabled(False)
+
+    def preLevel(self):
+        self.drawGraph(self.level-1)
+
+        self.pushButton_nextLevel.setEnabled(True)
+        if self.level-1 < 0:
+            self.pushButton_preLevel.setEnabled(False)
+
+    def start(self):
+        """
+        add start node and start animation
+        :param self:
+
+        :return: None
+        :raises: None
+        """
+        x = self.lineEdit_x.text()
+        y = self.lineEdit_y.text()
+        self.g.add_start_node(Node([x,y]))
+        #TODO: start animation
+
 
 if __name__ == '__main__':
 

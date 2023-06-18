@@ -1,8 +1,7 @@
 import numpy as np
 from numpy.linalg import norm
 import math
-from .graph import Graph, Node
-from vectors import *
+from graph import Graph, Node
 
 from mathutils.geometry import intersect_point_line
 
@@ -100,7 +99,7 @@ def find_point_on_graph(g : Graph, point : Node):
         :param point: Node checked to be on graph.
 
         :return: List of Nodes 
-        :raises: Node
+        :raises: 'Point is not on or near graph! Choose other point!'
     """    
     on_node = check_point_on_node(point,g.nodes)
     if on_node != None:
@@ -213,7 +212,7 @@ def find_point_on_graph(g : Graph, point : Node):
                 smallest=i 
         return smallest[0]
     
-    return None     
+    raise ValueError('The given point is to far from the graph! Please choose a closer point.')   
 
 if __name__ == "__main__":
     node0 = Node(coord = [0,0])
