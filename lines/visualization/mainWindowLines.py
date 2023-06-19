@@ -167,6 +167,13 @@ class Ui_Lines(object):
         self.pushButton_preLevel.setText(_translate("Lines", "Previous Level"))
 
     def createGraphs(self):
+        """
+        create a list of graphs
+        :param self:
+
+        :return: None
+        :raises: None
+        """
         node0 = Node(coord = [0,0])
         node1 = Node(coord = [0,4])
         node2 = Node(coord = [4,4])
