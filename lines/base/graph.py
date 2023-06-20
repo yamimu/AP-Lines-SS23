@@ -230,6 +230,22 @@ class Graph:
         """
         self.start_nodes.append(point)
 
+    def update_node_coord(self,node ,coord):
+        if isinstance(node, int):
+            node = self.nodes[node]
+            node.coord = coord
+            i = self.nodes.index(node)
+            weights_to_update = self.adjacency_matrix[i].nonzero()
+            for j in weights_to_update:
+                w = self.nodes[i].euclidian_distance(self.nodes[j])
+                #add weights here
+                if self.undirected:
+                    self.adjacency_matrix[i][j] = w
+                self.adjacency_matrix[j][i] = w
+
+        
+
+
     def toNx(self):
         """
         create a networkx Graph of this graph
