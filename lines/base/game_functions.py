@@ -77,7 +77,8 @@ def next_step(og, g, runner_info, step_length: float):
     :return:  g, runner_info updated with current expansion step
     """
 
-    
+    if len(runner_info) == 0:
+        return g, None
     runner_info_coord_list = np.array([[n.coord, m.coord] for n,m in runner_info])
     vs = runner_info_coord_list[:,1] - runner_info_coord_list[:,0]
     passed = np.linalg.norm(vs,axis = 1) <= step_length
@@ -97,6 +98,7 @@ def next_step(og, g, runner_info, step_length: float):
         og_node = runner_info[i][1]
         og_node_index = og.nodes.index(og_node)
         
+        """
         ### Isolated Code for further developement
         zg, zri = inital_step(og,og_node_index)
         zri = [info for info in zri if info[1] not in g.nodes]
@@ -108,13 +110,14 @@ def next_step(og, g, runner_info, step_length: float):
         print(f"zg: {len(zg.nodes)},\n zri: {len(zri)}")
 
         ### end isolated code
+        """
         
 
         #here new runners are added 
         neighbour_indices = og.adjacency_matrix[og.nodes.index(og_node)].nonzero()[0]
         new_edges = []
         for j in neighbour_indices:
-            if not((j,og_node_index) in g.edge_list):# or (og_node_index,j) in g.edge_list):
+            if not( (j,og_node_index) in g.edge_list or (og_node_index,j) in g.edge_list):
                 new_edges.append((og_node_index,j))
         
         print(new_edges)
@@ -139,16 +142,22 @@ def next_step(og, g, runner_info, step_length: float):
 
 
 if __name__ == "__main__":
+    from  ..optimization import shortestPath
     og = Graph([Node([0,0]), Node([1,1]), Node([2,0]), Node([2,1])],
                [(0,1),(0,2),(1,2),(1,3)])
-    ng, runner_info = inital_step(og, 0)
-    g, runner_info = next_step(og,ng,runner_info, 1.5)
-    g, runner_info = next_step(og,g,runner_info, .8) 
-    #print([n.coord for n in g.nodes])
-    #print([n.coord for n, i in runner_info])
-    g = g.toNx()
+    g, runner_info = inital_step(og, 0)
+    step_length = .9
+    sum_step = 0
+    max_dist = 6
     
-    nx.draw_networkx(g, nx.get_node_attributes(g, 'pos'), labels=nx.get_node_attributes(g, 'label'))
-    plt.show()
+    while(sum_step < max_dist):
+        sum_step += step_length
+        g, runner_info = next_step(og,g,runner_info, step_length) 
+        #print([n.coord for n in g.nodes])
+        #print([n.coord for n, i in runner_info])
+        show_g = g.toNx()
+        
+        nx.draw_networkx(show_g, nx.get_node_attributes(show_g, 'pos'), labels=nx.get_node_attributes(show_g, 'label'))
+        plt.show()
 
     
