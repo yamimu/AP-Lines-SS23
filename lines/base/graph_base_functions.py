@@ -2,8 +2,31 @@ import numpy as np
 from numpy.linalg import norm
 import math
 from .graph import Graph, Node
+#TODO: why do we need the intersect point? Later code only uses shortest distance
 
-from mathutils.geometry import intersect_point_line
+#from mathutils.geometry import intersect_point_line
+
+""" def compute_intersection(x, y, z):
+    if x[0] == y[0]:
+        # Line is vertical, handle separately
+        intersection_x = x[0]
+        intersection_y = z[1]  # x-coordinate of intersection, y-coordinate of point z
+    else:
+        # Compute the direction vector of the line
+        direction_vector = y - x
+        
+        # Compute the vector from x to z
+        x_to_z_vector = z - x
+        
+        # Calculate the parameter along the line for the intersection point
+        t = np.dot(x_to_z_vector, direction_vector) / np.dot(direction_vector, direction_vector)
+        
+        # Calculate the intersection point
+        intersection = x + t * direction_vector
+        intersection_x, intersection_y = intersection
+        
+    intersection = np.array([intersection_x, intersection_y])
+    return intersection """
 
 def shortest_distance(edge_point1, edge_point2, point):
     """
@@ -16,8 +39,8 @@ def shortest_distance(edge_point1, edge_point2, point):
         :return: nearest point on line and distance  
         :raises: None
     """
-    intersect = intersect_point_line(point, edge_point2, edge_point1)
-    return (intersect[0],norm(np.cross(edge_point2-edge_point1, edge_point1-point))/norm(edge_point2-edge_point1))
+    #intersect = compute_intersection(edge_point2, edge_point1, point)
+    return norm(np.cross(edge_point2-edge_point1, edge_point1-point))/norm(edge_point2-edge_point1)
 
 def check_point_on_node(point,nodes):
     """
@@ -174,8 +197,8 @@ def find_point_on_graph(g : Graph, point : Node):
                     dis = math.dist(point.coord,nod_min.coord)
                 c = abs(dis)
             else:
-                dis = (shortest_distance(edge_points[0].coord,edge_points[1].coord,point.coord))
-                c = dis[1]
+                dis = shortest_distance(edge_points[0].coord,edge_points[1].coord,point.coord)
+                c = dis
         
         #creates new_point on graph if distance c is less than max_dis    
         max_dis = 0.5
