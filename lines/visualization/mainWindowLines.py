@@ -16,6 +16,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 import networkx as nx 
 from ..base.graph import Graph, Node
+from ..base import game_functions as gf
 
 
 class Ui_Lines(object):
@@ -237,10 +238,19 @@ class Ui_Lines(object):
         :return: None
         :raises: None
         """
-        x = self.lineEdit_x.text()
-        y = self.lineEdit_y.text()
-        self.g.add_start_node(Node([x,y]))
-        #TODO: start animation
+        x = float(self.lineEdit_x.text())
+        y = float(self.lineEdit_y.text())
+        newGraph = gf.set_start_point(x, y, self.g)
+        #
+        '''
+        TODO:
+            - zeichne Graphen neu
+            - fange fehler ab
+            - start animation
+        '''
+        def setOptimalPoint(self):
+            #TODO: Punkt aus shortestPath.py def best_start_point()
+            i = 1
 
 
 if __name__ == '__main__':

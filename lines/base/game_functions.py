@@ -22,14 +22,14 @@ def set_start_point(x:int ,y:int, g: Graph):
     except ValueError as er:
         print(er)
         return None
-    
-    
     if graph_node[0] in g.nodes:
         return g
     else:
         new_g = Graph(g.nodes,g.edge_list)
-        new_g.remove_edge(graph_node[1])
-        new_g.add_node(graph_node[0],graph_node[1])
+        #TODO: graph node is sometimes none
+        if graph_node[1] is not None:
+            new_g.remove_edge(graph_node[1])
+            new_g.add_node(graph_node[0],graph_node[1])
         return new_g
     
     if graph_nodes != None:
