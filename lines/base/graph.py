@@ -194,7 +194,7 @@ class Graph:
         """
         j = self.index_of(point)
         edges= []
-        for i in range(0,g.n_nodes):
+        for i in range(0,self.n_nodes):
             if self.adjacency_matrix[i][j] > 0:
                 if i < j:
                     edges.append((i,j))

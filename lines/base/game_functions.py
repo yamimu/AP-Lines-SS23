@@ -88,23 +88,29 @@ def next_step(og, g, runner_info, step_length: float):
     runner_new_coord = runner_info_coord_list[:,0] + step_length * us
 
     for i, new_coord in enumerate(runner_new_coord):
+        # if we don't reach a node we just update the coordinates
         if(not passed[i]):
             runner_info[i][0].coord = new_coord
             continue
-
+        
+        #we set the runner node to the target node 
         og_node = runner_info[i][1]
         og_node_index = og.nodes.index(og_node)
         
-        ### Isolated Code 
+        ### Isolated Code for further developement
         zg, zri = inital_step(og,og_node_index)
-        
         zri = [info for info in zri if info[1] not in g.nodes]
         if len(zri) > 0:
             zg ,zri = next_step(og, zg, zri, rest_distance[i])
+        
 
+        print([n.coord for n in zg.nodes])
         print(f"zg: {len(zg.nodes)},\n zri: {len(zri)}")
+
         ### end isolated code
         
+
+        #here new runners are added 
         neighbour_indices = og.adjacency_matrix[og.nodes.index(og_node)].nonzero()[0]
         new_edges = []
         for j in neighbour_indices:
