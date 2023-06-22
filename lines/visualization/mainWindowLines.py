@@ -192,7 +192,7 @@ class Ui_Lines(object):
     
     def drawGraph(self, level):
         """
-        draw a new graph with axes on the canvas
+        draw a new graph with axes on the canvas based on the selected level
         :param self:
         :param level: position of graph in graphs[]
 
@@ -230,6 +230,12 @@ class Ui_Lines(object):
         if self.level-1 < 0:
             self.pushButton_preLevel.setEnabled(False)
 
+    def back(self):
+        self.drawGraph(self.level)
+
+        if self.level < 0:
+            self.pushButton_preLevel.setEnabled(False)
+
     def start(self):
         """
         add start node and start animation
@@ -238,13 +244,33 @@ class Ui_Lines(object):
         :return: None
         :raises: None
         """
-        x = float(self.lineEdit_x.text())
-        y = float(self.lineEdit_y.text())
-        newGraph = gf.set_start_point(x, y, self.g)
+        x = self.lineEdit_x.text()
+        y = self.lineEdit_y.text()
+        if x and y:
+            x = float(self.lineEdit_x.text())
+            y = float(self.lineEdit_y.text())
+            newGraph = gf.set_start_point(x, y, self.g)
+            if(newGraph != self.g):
+                #draw new graph with startpoint as node
+                self.figure.clear()
+                newNxGraph = newGraph.toNx()
+                pos = nx.get_node_attributes(newNxGraph, 'pos')
+                ax = self.figure.add_subplot()
+                labels = nx.get_node_attributes(newNxGraph, 'label')
+                nx.draw_networkx(newNxGraph, pos, ax=ax, labels=labels)
+                ax.set_axis_on()
+                ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+                self.graphView.canvas.draw_idle()
+
+                """ #setze button back
+                self.pushButton_preLevel.setText("back")
+                self.pushButton_preLevel.setEnabled(True)
+                self.pushButton_preLevel.clicked.connect(self.back) """
+        else:
+            msg = QtWidgets.QMessageBox.critical(self.centralwidget, "Error", "Please enter a start point!")
         #
         '''
         TODO:
-            - zeichne Graphen neu
             - fange fehler ab
             - start animation
         '''
