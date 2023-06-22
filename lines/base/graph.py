@@ -128,7 +128,7 @@ class Graph:
         :param w: (default = None) weight to be put in the adjacency_matix
 
         :return: None
-        :raises: Node
+        :raises: None
         """
         i,j = self.check_edge(edge)
         if w == None:

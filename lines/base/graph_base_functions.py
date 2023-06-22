@@ -2,31 +2,35 @@ import numpy as np
 from numpy.linalg import norm
 import math
 from .graph import Graph, Node
-#TODO: why do we need the intersect point? Later code only uses shortest distance
 
-#from mathutils.geometry import intersect_point_line
+def compute_intersection(edge_point1, edge_point2, point):
+    """
+        computes the intersection point between point and line defined by 2 points.  
 
-""" def compute_intersection(x, y, z):
-    if x[0] == y[0]:
-        # Line is vertical, handle separately
-        intersection_x = x[0]
-        intersection_y = z[1]  # x-coordinate of intersection, y-coordinate of point z
+        :param edge_point1: first graph point on line 
+        :param edge_point2: second graph point on line
+        :param point: node not on line
+
+        :return: Node on line
+        :raises: None
+    """
+    if edge_point1[0] == edge_point2[0]:
+        # Line is vertical
+        intersection_x = edge_point1[0]
+        intersection_y = point[1]  
     else:
         # Compute the direction vector of the line
-        direction_vector = y - x
-        
-        # Compute the vector from x to z
-        x_to_z_vector = z - x
-        
+        direction_vector = edge_point2 - edge_point1
+        # Compute the vector from edge_point1 to the point
+        x_to_z_vector = point - edge_point1
         # Calculate the parameter along the line for the intersection point
         t = np.dot(x_to_z_vector, direction_vector) / np.dot(direction_vector, direction_vector)
         
-        # Calculate the intersection point
-        intersection = x + t * direction_vector
+        intersection = edge_point1 + t * direction_vector
         intersection_x, intersection_y = intersection
         
-    intersection = np.array([intersection_x, intersection_y])
-    return intersection """
+    intersection = Node((intersection_x,intersection_y))
+    return intersection 
 
 def shortest_distance(edge_point1, edge_point2, point):
     """
@@ -36,11 +40,10 @@ def shortest_distance(edge_point1, edge_point2, point):
         :param edge_point2: second graph point on line
         :param point: Node checked distance to graph
 
-        :return: nearest point on line and distance  
+        :return: Tuple of intersected node on line and distance  
         :raises: None
     """
-    #intersect = compute_intersection(edge_point2, edge_point1, point)
-    return norm(np.cross(edge_point2-edge_point1, edge_point1-point))/norm(edge_point2-edge_point1)
+    return (compute_intersection(edge_point2, edge_point1, point),norm(np.cross(edge_point2-edge_point1, edge_point1-point))/norm(edge_point2-edge_point1))
 
 def check_point_on_node(point,nodes):
     """
@@ -49,7 +52,7 @@ def check_point_on_node(point,nodes):
         :param point: Node checked to be on graph.
         :param nodes: List of nodes in graph.
 
-        :return: Node
+        :return: Node or None
         :raises: None
     """
     for nod in nodes:
@@ -84,7 +87,7 @@ def check_point_between_nodes(point,edge_points, kind):
         :param edge_points: 2 Nodes enclosing line
         :param kind: kind of line.
 
-        :return: List of Nodes 
+        :return: True if between points. False if not.
         :raises: None
     """
     if kind == "vertical":
@@ -116,14 +119,17 @@ def find_point_on_graph(g : Graph, point : Node):
         Afterwards the point ist tested if it is on a line by putting the x of 
         the point into the functions and checking if the y is the same as the 
         result. Then it is checked if the Point ist between the 2 Nodes that defined 
-        the function. Returns the 2 Nodes the point is between of, one Node if point has same x and y or None.  
+        the function. Returns the the point on the graph and a tuple of the 2 Nodes the point is between of. If the point is on a existing Node Tuple is None.  
 
         :param g: the Graph class containing the graph to check.
         :param point: Node checked to be on graph.
 
-        :return: List of Nodes 
-        :raises: 'Point is not on or near graph! Choose other point!'
+        :return: List with point on graph and tuple of nodes enclosing point.
+        :raises: Value error if graph has no nodes or point not on or near graph
     """    
+    if g.n_nodes <= 0:
+        raise ValueError('Graph has no Nodes')
+    
     on_node = check_point_on_node(point,g.nodes)
     if on_node != None:
         return (on_node,(None))
@@ -140,10 +146,10 @@ def find_point_on_graph(g : Graph, point : Node):
         if deltay == 0:
             func = lambda m,y=i[0].coord[1] : y
             kind= "horizontal"
-        if deltax == 0:
+        elif deltax == 0:
             func = lambda m,x=i[0].coord[0] : x 
             kind = "vertical"
-        if deltax != 0 and deltay != 0:
+        else:
             steige = deltax / deltay
             start = i[0].coord[1] - (i[0].coord[0]*steige)
             func = lambda x,m=steige,b=start : m*x+b
@@ -198,7 +204,7 @@ def find_point_on_graph(g : Graph, point : Node):
                 c = abs(dis)
             else:
                 dis = shortest_distance(edge_points[0].coord,edge_points[1].coord,point.coord)
-                c = dis
+                c = dis[1]
         
         #creates new_point on graph if distance c is less than max_dis    
         max_dis = 0.5
@@ -209,7 +215,7 @@ def find_point_on_graph(g : Graph, point : Node):
             elif f[0] == "horizontal": 
                 new_point = Node((point.coord[0],edge_points[0].coord[0]))
             elif f[0] == "pitch":
-                new_point = Node(tuple(dis[0]))
+                new_point = dis[0]
             
             new_on_graph = check_point_on_node(new_point,g.nodes)
             if new_on_graph != None:
@@ -242,9 +248,10 @@ if __name__ == "__main__":
     node1 = Node(coord = [0,4])
     node2 = Node(coord = [4,4])
     node3 = Node(coord = [4,0])
-    node4 = Node(coord = [2,2.1])
+    node4 = Node(coord = [5,5.1])
     edges = [(0,1),(0,3),(0,2),(1,2),(2,3)]
     g = Graph([node0,node1,node2,node3], edges)
     nod= find_point_on_graph(g,node4)
-    print (nod)
-
+    print(nod[0].coord)
+    print(nod[1][0].coord)
+    print(nod[1][1].coord) 

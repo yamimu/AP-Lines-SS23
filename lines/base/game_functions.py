@@ -7,38 +7,28 @@ import matplotlib.pyplot as plt
 
 
 
-def set_start_point(x:int ,y:int, g: Graph):
+def set_start_point(x : float ,y : float , g: Graph):
     """
-        creates a Node to start on the graph from given coordinates. Checks if point is on graph.
-        :param self:
-        :param edge:
+        creates a Node to start on the graph from given coordinates. Checks if point 
+        is on graph. If point is on graph creates new graph with point as node if it 
+        is between existing nodes or returns existing graph if point is on node.
+        :param x: x-coordinate of point
+        :param y: y-coordinate of point
+        :param g: Graph which is checked
 
-        :return: None
-        :raises: None
+        :return: Graph
+        :raises: Value error if no nodes in graph
         """
     start = Node((x,y))
-    try:
-        graph_node = find_point_on_graph(g,start)
-    except ValueError as er:
-        print(er)
-        return None
-    if graph_node[0] in g.nodes:
+    graph_nodes = find_point_on_graph(g,start)
+    
+    if graph_nodes[1] is None:
         return g
     else:
         new_g = Graph(g.nodes,g.edge_list)
-        #TODO: graph node is sometimes none
-        if graph_node[1] is not None:
-            new_g.remove_edge(graph_node[1])
-            new_g.add_node(graph_node[0],graph_node[1])
+        new_g.remove_edge(graph_nodes[1])
+        new_g.add_node(graph_nodes[0],graph_nodes[1])
         return new_g
-    
-    if graph_nodes != None:
-        if len(graph_nodes) > 1:
-            g.remove_edge((graph_nodes[0],graph_nodes[1]))   
-            g.add_node(start,[graph_nodes[0],graph_nodes[1]])
-            g.add_start_node(start)
-        if len(graph_nodes) == 1:
-            g.add_start_node(graph_nodes[0])
          
             
 
