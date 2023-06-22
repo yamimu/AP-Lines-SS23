@@ -233,6 +233,8 @@ class Ui_Lines(object):
     def back(self):
         self.drawGraph(self.level)
 
+        self.pushButton_preLevel.setText("Previous level")
+        self.pushButton_preLevel.clicked.connect(self.preLevel)
         if self.level < 0:
             self.pushButton_preLevel.setEnabled(False)
 
@@ -249,29 +251,31 @@ class Ui_Lines(object):
         if x and y:
             x = float(self.lineEdit_x.text())
             y = float(self.lineEdit_y.text())
-            newGraph = gf.set_start_point(x, y, self.g)
-            if(newGraph != self.g):
-                #draw new graph with startpoint as node
-                self.figure.clear()
-                newNxGraph = newGraph.toNx()
-                pos = nx.get_node_attributes(newNxGraph, 'pos')
-                ax = self.figure.add_subplot()
-                labels = nx.get_node_attributes(newNxGraph, 'label')
-                nx.draw_networkx(newNxGraph, pos, ax=ax, labels=labels)
-                ax.set_axis_on()
-                ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
-                self.graphView.canvas.draw_idle()
+            try:
+                newGraph = gf.set_start_point(x, y, self.g)
+                if(newGraph != self.g):
+                    #draw new graph with startpoint as node
+                    self.figure.clear()
+                    newNxGraph = newGraph.toNx()
+                    pos = nx.get_node_attributes(newNxGraph, 'pos')
+                    ax = self.figure.add_subplot()
+                    labels = nx.get_node_attributes(newNxGraph, 'label')
+                    nx.draw_networkx(newNxGraph, pos, ax=ax, labels=labels)
+                    ax.set_axis_on()
+                    ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+                    self.graphView.canvas.draw_idle()
 
-                """ #setze button back
-                self.pushButton_preLevel.setText("back")
-                self.pushButton_preLevel.setEnabled(True)
-                self.pushButton_preLevel.clicked.connect(self.back) """
+                    """ #setze button back
+                    self.pushButton_preLevel.setText("back")
+                    self.pushButton_preLevel.setEnabled(True)
+                    self.pushButton_preLevel.clicked.connect(self.back) """
+            except ValueError as err:
+                msg = QtWidgets.QMessageBox.critical(self.centralwidget, "Error", err.args[0])
         else:
-            msg = QtWidgets.QMessageBox.critical(self.centralwidget, "Error", "Please enter a start point!")
+                    msg = QtWidgets.QMessageBox.critical(self.centralwidget, "Error", "Please enter a start point!")
         #
         '''
         TODO:
-            - fange fehler ab
             - start animation
         '''
         def setOptimalPoint(self):
