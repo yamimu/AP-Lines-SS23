@@ -5,15 +5,15 @@ import numpy as np
 
 def best_start_point(graph):
     """
-    given a graph this function calculates the point on the graph, node or edge,
-    tha has the smallest possible distance to the point(a) the farthest away regarding
-    shortest paths. 
+    given a graph this function calculates the point on the graph,
+    node or edge, that has the smallest possible distance to the
+    point(a) the farthest away regarding shortest paths. 
     This algorithm uses the propertie that when walking towards a,
-    we walk away from the second farthest node b. when a and b are equally far away,
-    our result is a node on the graph calculated like best_start_node_index
-    to find our optimal point we walk half the distance of the difference between
-    the distances of a and b from the best_start_node towards the first node(na)
-    on the path to a
+    we walk away from the second farthest node b. when a and b are
+    equally far away, our result is a node on the graph calculated like
+    best_start_node_index to find our optimal point we walk half the
+    distance of the difference between the distances of a and b from the
+    best_start_node towards the first node(na) on the path to a
 
     :param graph:
     :return: Node
@@ -48,9 +48,10 @@ def best_start_point(graph):
 
 def best_start_node_index(graph):   
     """
-    returns the best node to start from to color a graph within the minimum amout of time,
-    decided by the shortest travel distance to the node the farthest away
-    works best for fully connected graphs otherwise returns solution, possibly not optimal
+    returns the best node to start from to color a graph within the 
+    minimum amout of time, decided by the shortest travel distance to 
+    the node the farthest away works best for fully connected graphs
+    otherwise returns solution, possibly not optimal
     :param graph: graph to find the node on
     
     :return: index of node 
@@ -61,10 +62,11 @@ def best_start_node_index(graph):
     best_index = np.argmin(np.max(floydwarshall_matrix,axis = 0)) #
     return best_index
 
-# doesnt work yet
+#doesn't fully work
 def dijkstra(graph, start_node):
         """
-        compute the shortest distance from the start node to any node reachable using dijkstras algorithm
+        compute the shortest distance from the start node to any node 
+        reachable using dijkstras algorithm
 
         :param graph: graph to apply algorithm on
         :param start_node: graph to calculate distances for
@@ -84,12 +86,15 @@ def dijkstra(graph, start_node):
         while valid_indices:
             d_index = np.argmin(dist[valid_indices])
             v_index = valid_indices[d_index]
-            neighbourhood_v = [i for i,n in enumerate(graph.adjacency_matrix[v_index]) if n != 0]
+            neighbourhood_v = [i for i,n 
+                               in enumerate(graph.adjacency_matrix[v_index])
+                                 if n != 0]
             valid_indices.remove(v_index)
-            for u_index in neighbourhood_v: # // where neighbor u has not yet been removed from Q.
+            for u_index in neighbourhood_v: 
+                # where neighbor u has not yet been removed from Q.
                 alt = dist[v_index] + adjacency_matrix[v_index][u_index]
-                if alt < dist[u_index]:               #// A shorter path to u has been found
-                    dist[u_index]  = alt            #// Update distance of u 
+                if alt < dist[u_index]:  #// A shorter path to u has been found
+                    dist[u_index]  = alt #// Update distance of u 
 
         return dist
 
@@ -98,7 +103,8 @@ def dijkstra(graph, start_node):
 def floydwarshall(graph, return_paths = False):
         
         next = np.full_like(graph.adjacency_matrix,-1,int)
-        next[graph.adjacency_matrix.nonzero()] = graph.adjacency_matrix.nonzero()[1]
+        next[graph.adjacency_matrix.nonzero()] = graph.adjacency_matrix\
+                                                      .nonzero()[1]
         M = np.full_like(graph.adjacency_matrix,float('inf'))
         for x in range(len(M)):
             for y in range(len(M[0])):

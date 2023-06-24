@@ -211,7 +211,10 @@ class Ui_Lines(object):
             
             nx.draw_networkx(g, pos, ax=ax, labels=labels)
             ax.set_axis_on()
-            ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+            ax.tick_params(left=True,
+                           bottom=True,
+                           labelleft=True,
+                           labelbottom=True)
             self.graphView.canvas.draw_idle()
             self.label_lines.setText(f"Lines - Level {level}")
 
@@ -262,7 +265,10 @@ class Ui_Lines(object):
                     labels = nx.get_node_attributes(newNxGraph, 'label')
                     nx.draw_networkx(newNxGraph, pos, ax=ax, labels=labels)
                     ax.set_axis_on()
-                    ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+                    ax.tick_params(left=True,
+                                   bottom=True,
+                                   labelleft=True,
+                                   labelbottom=True)
                     self.graphView.canvas.draw_idle()
 
                     """ #setze button back
@@ -270,9 +276,13 @@ class Ui_Lines(object):
                     self.pushButton_preLevel.setEnabled(True)
                     self.pushButton_preLevel.clicked.connect(self.back) """
             except ValueError as err:
-                msg = QtWidgets.QMessageBox.critical(self.centralwidget, "Error", err.args[0])
+                msg = QtWidgets.QMessageBox.critical(self.centralwidget,
+                                                     "Error",
+                                                     err.args[0])
         else:
-                    msg = QtWidgets.QMessageBox.critical(self.centralwidget, "Error", "Please enter a start point!")
+            msg = QtWidgets.QMessageBox.critical(self.centralwidget,
+                                                "Error",
+                                                 "Please enter a start point!")
         #
         '''
         TODO:

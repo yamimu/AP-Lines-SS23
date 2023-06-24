@@ -1,3 +1,4 @@
+from typing import Tuple
 from .graph import Graph, Node
 from .graph_base_functions import find_point_on_graph
 
@@ -7,11 +8,12 @@ import matplotlib.pyplot as plt
 
 
 
-def set_start_point(x : float ,y : float , g: Graph):
+def set_start_point(x : float ,y : float , g: Graph) -> Graph:
     """
-        creates a Node to start on the graph from given coordinates. Checks if point 
-        is on graph. If point is on graph creates new graph with point as node if it 
-        is between existing nodes or returns existing graph if point is on node.
+        creates a Node to start on the graph from given coordinates.
+        Checks if point is on graph. If point is on graph creates new 
+        graph with point as node if it is between existing nodes or
+        returns existing graph if point is on node.
         :param x: x-coordinate of point
         :param y: y-coordinate of point
         :param g: Graph which is checked
@@ -19,64 +21,75 @@ def set_start_point(x : float ,y : float , g: Graph):
         :return: Graph
         :raises: Value error if no nodes in graph
         """
-    start = Node((x,y))
+    start :Node = Node((x,y))
     graph_nodes = find_point_on_graph(g,start)
     
     if graph_nodes[1] is None:
         return g
     else:
-        new_g = Graph(g.nodes,g.edge_list)
+        new_g :Graph = Graph(g.nodes,g.edge_list)
         new_g.remove_edge(graph_nodes[1])
         new_g.add_node(graph_nodes[0],graph_nodes[1])
         return new_g
          
             
 
-def inital_step(g :Graph, start_index: int):
+def inital_step(g :Graph, start_index: int): 
     """
-    setup for animation of graph, creates one node for each edge of the start node
-    returns graph with n + 1 nodes n being amount of edges who all have the coords
-    of the start_node
-    runner_info is to store information along what edge the node is expanding
+    setup for animation of graph, creates one node for each edge of the
+    start node returns graph with n + 1 nodes n being amount of edges 
+    who all have the coords of the start_node
+    runner_info is to store information along what edge the node is 
+    expanding
     :param g: graph to fill
     :param start_index: start_index of node in graph from which to start
 
     return: new_graph, runner_info
 
     """
-    neighbour_indices = g.adjacency_matrix[start_index].nonzero()[0]
-    ng = Graph([g.nodes[start_index]])
-    runner_info = []
+    neighbour_indices :list[int] = g.adjacency_matrix[start_index]\
+                                    .nonzero()[0]
+    ng :Graph= Graph([g.nodes[start_index]])
+    runner_info :list[tuple[Node,tuple(int,int)]]= []
     for neigh_index in neighbour_indices:
-        node = Node(g.nodes[start_index].coord)
+        node :Node = Node(g.nodes[start_index].coord)
         ng.add_node(node,[0])
         runner_info.append((node,g.nodes[neigh_index]))
     
     return ng, runner_info
     
 
-def next_step(og, g, runner_info, step_length: float):
+def next_step(og :Graph,
+                g :Graph,
+                runner_info :list[tuple[Node,tuple[int,int]]],
+                step_length: float):
     """
-    returns the next step of the expansion of g into og  returning an updated graph and runner_info
-    !!! currently only expands along edge from one side and only expands until next node
+    returns the next step of the expansion of g into og  returning an
+    updated graph and runner_info
+    !!! currently weird things happen when walking an edge from multiple
+      sides
     :param og: original graph to be simulated
     :param g: current iteration of graph to be further expanded
     :param runner_info: information about expanding nodes
-    :param step_length: how far the expanding nodes are allowed to travel
+    :param step_length: how far the expanding nodes are allowed to 
+    travel
 
     :return:  g, runner_info updated with current expansion step
     """
 
     if len(runner_info) == 0:
         return g, None
-    runner_info_coord_list = np.array([[n.coord, m.coord] for n,m in runner_info])
-    vs = runner_info_coord_list[:,1] - runner_info_coord_list[:,0]
-    passed = np.linalg.norm(vs,axis = 1) <= step_length
-    rest_distance = step_length - np.linalg.norm(vs,axis=1)
-    norm_vs = np.linalg.norm(vs,axis = 1)
-    us = vs/ norm_vs[:,None]
+    runner_info_coord_list :list[list[np.ndarray]] = \
+        np.array([[n.coord, m.coord] for n,m in runner_info])
+    vs :np.ndarray = runner_info_coord_list[:,1] \
+                     - runner_info_coord_list[:,0]
+    passed :list[bool] = np.linalg.norm(vs,axis = 1) <= step_length
+    rest_distance :np.ndarray = step_length - np.linalg.norm(vs,axis=1)
+    norm_vs: np.ndarray = np.linalg.norm(vs,axis = 1)
+    us :np.ndarray = vs/ norm_vs[:,None]
 
-    runner_new_coord = runner_info_coord_list[:,0] + step_length * us
+    runner_new_coord :np.ndarray = runner_info_coord_list[:,0] \
+                                    + step_length * us
 
     for i, new_coord in enumerate(runner_new_coord):
         # if we don't reach a node we just update the coordinates
@@ -85,8 +98,8 @@ def next_step(og, g, runner_info, step_length: float):
             continue
         
         #we set the runner node to the target node 
-        og_node = runner_info[i][1]
-        og_node_index = og.nodes.index(og_node)
+        og_node :Node = runner_info[i][1]
+        og_node_index :int = og.nodes.index(og_node)
         
         """
         ### Isolated Code for further developement
@@ -104,10 +117,12 @@ def next_step(og, g, runner_info, step_length: float):
         
 
         #here new runners are added 
-        neighbour_indices = og.adjacency_matrix[og.nodes.index(og_node)].nonzero()[0]
-        new_edges = []
+        neighbour_indices :list[int] = \
+            og.adjacency_matrix[og.nodes.index(og_node)].nonzero()[0]
+        new_edges :list[tuple[int,int]] = []
         for j in neighbour_indices:
-            if not( (j,og_node_index) in g.edge_list or (og_node_index,j) in g.edge_list):
+            if not( (j,og_node_index) in g.edge_list 
+                   or (og_node_index,j) in g.edge_list):
                 new_edges.append((og_node_index,j))
         
         print(new_edges)
@@ -115,7 +130,7 @@ def next_step(og, g, runner_info, step_length: float):
         
         for start_index,target_index in new_edges:
             print(og.nodes[start_index].coord)
-            temp_node = Node(og.nodes[start_index].coord)
+            temp_node :Node = Node(og.nodes[start_index].coord)
             g.add_node(temp_node,[start_index])
             runner_info.append((temp_node,og.nodes[target_index]))
 
@@ -147,7 +162,10 @@ if __name__ == "__main__":
         #print([n.coord for n, i in runner_info])
         show_g = g.toNx()
         
-        nx.draw_networkx(show_g, nx.get_node_attributes(show_g, 'pos'), labels=nx.get_node_attributes(show_g, 'label'))
+        nx.draw_networkx(show_g,
+                        nx.get_node_attributes(show_g, 'pos'),
+                        labels=nx.get_node_attributes(show_g, 'label')
+                        )
         plt.show()
 
     

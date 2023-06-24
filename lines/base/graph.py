@@ -120,8 +120,8 @@ class Graph:
     
     def add_edge(self,edge, w = None):
         """
-        adds edge to graph automatically calculating the euclidian distance
-        as the weight respects directionality
+        adds edge to graph automatically calculating the euclidian
+        distance as the weight respects directionality
 
         :param self:
         :param edge: edge to be added
@@ -258,11 +258,15 @@ class Graph:
 
         if(self.nodes):
             for i in range(self.n_nodes):
-                g.add_node(i, pos = self.nodes[i].coord, label=str(self.nodes[i]))
+                g.add_node(i,
+                            pos = self.nodes[i].coord,
+                            label=str(self.nodes[i]))
         
         if(self.edge_list):
             for edge in self.edge_list:
-                g.add_edge(edge[0],edge[1], length = self.adjacency_matrix[edge[0]][edge[1]])
+                g.add_edge(edge[0],
+                           edge[1],
+                           length = self.adjacency_matrix[edge[0]][edge[1]])
 
         return g
     
