@@ -22,7 +22,7 @@ def best_start_point(graph):
     
     #we need the index and 
     res_floyd = floydwarshall(graph,True)
-    floydwarshall_matrix, paths = res[0], res[1]
+    floydwarshall_matrix = res_floyd[0]
     max_floyd = np.max(floydwarshall_matrix,axis= 0)
     best_index = np.argmin(max_floyd)
     
