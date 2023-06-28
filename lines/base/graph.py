@@ -26,7 +26,7 @@ class Node:
             self.coord = np.array([0,0])
 
     def __str__(self) -> str:
-        return f"({self.coord[0]},{self.coord[1]})"
+        return f"({round(self.coord[0],2)},{round(self.coord[1],2)})"
 
     def euclidian_distance(self,node):
         ''' 

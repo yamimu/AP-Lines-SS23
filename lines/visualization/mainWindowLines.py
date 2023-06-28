@@ -18,6 +18,7 @@ import networkx as nx
 from ..base.graph import Graph, Node
 from ..base import game_functions as gf
 from ..optimization import shortestPath
+import copy
 
 
 class Ui_Lines(object):
@@ -53,12 +54,19 @@ class Ui_Lines(object):
 
         #setup buttons
         self.pushButton_start = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_start.setGeometry(QtCore.QRect(900, 260, 93, 28))
+        self.pushButton_start.setGeometry(QtCore.QRect(830, 260, 93, 28))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.pushButton_start.setFont(font)
         self.pushButton_start.setObjectName("pushButton_start")
         self.pushButton_start.clicked.connect(self.start)
+
+        self.pushButton_reset = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_reset.setGeometry(QtCore.QRect(960, 260, 93, 28))
+        self.pushButton_reset.setFont(font)
+        self.pushButton_reset.setObjectName("pushButton_reset")
+        self.pushButton_reset.clicked.connect(self.back)
+        self.pushButton_reset.setEnabled(False)
 
         self.pushButton_nextLevel = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_nextLevel.setGeometry(QtCore.QRect(960, 590, 93, 28))
@@ -118,15 +126,6 @@ class Ui_Lines(object):
         self.label_y.setFont(font)
         self.label_y.setObjectName("label_y")
 
-        self.label_winner = QtWidgets.QLabel(self.centralwidget)
-        self.label_winner.setGeometry(QtCore.QRect(830, 320, 71, 21))
-        self.label_winner.setObjectName("label_winner")
-
-        self.label_winningPlayer = QtWidgets.QLabel(self.centralwidget)
-        self.label_winningPlayer.setGeometry(QtCore.QRect(900, 370, 101, 21))
-        self.label_winningPlayer.setText("")
-        self.label_winningPlayer.setObjectName("label_winningPlayer")
-
         #setup edit fields
         self.lineEdit_x = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_x.setGeometry(QtCore.QRect(860, 150, 191, 31))
@@ -176,6 +175,7 @@ class Ui_Lines(object):
         self.pushButton_nextLevel.setText(_translate("Lines", "Next Level"))
         self.pushButton_preLevel.setText(_translate("Lines", "Previous Level"))
         self.pushButton_optimal.setText(_translate("Lines", "Optimal Point"))
+        self.pushButton_reset.setText(_translate("Lines", "Reset"))
 
     def createGraphs(self):
         """
@@ -212,7 +212,7 @@ class Ui_Lines(object):
         if level < len(self.graphs) and level >= 0:
             self.level = level
             self.figure.clear()
-            self.g = self.graphs[level]
+            self.g = copy.deepcopy(self.graphs[level])
             g = self.g.toNx()
 
             pos = nx.get_node_attributes(g, 'pos')
@@ -227,6 +227,8 @@ class Ui_Lines(object):
                            labelbottom=True)
             self.graphView.canvas.draw_idle()
             self.label_lines.setText(f"Lines - Level {level}")
+            self.pushButton_reset.setEnabled(False)
+            self.pushButton_start.setEnabled(True)
 
 
     def nextLevel(self):
@@ -235,6 +237,7 @@ class Ui_Lines(object):
         self.pushButton_preLevel.setEnabled(True)
         if self.level+1 >= len(self.graphs):
             self.pushButton_nextLevel.setEnabled(False)
+        
 
     def preLevel(self):
         self.drawGraph(self.level-1)
@@ -242,6 +245,11 @@ class Ui_Lines(object):
         self.pushButton_nextLevel.setEnabled(True)
         if self.level-1 < 0:
             self.pushButton_preLevel.setEnabled(False)
+        
+
+    def back(self):
+        self.drawGraph(self.level)
+
 
     def setOptimalPoint(self):
         n = shortestPath.best_start_point(self.g)
@@ -252,6 +260,7 @@ class Ui_Lines(object):
         self.lineEdit_y.clear()
         self.lineEdit_y.insert(str(y))
 
+
     def start(self):
         """
         add start node and start animation
@@ -260,11 +269,11 @@ class Ui_Lines(object):
         :return: None
         :raises: None
         """
-        x = self.lineEdit_x.text()
-        y = self.lineEdit_y.text()
+        x = self.lineEdit_x.text().replace(",", ".")
+        y = self.lineEdit_y.text().replace(",", ".")
         if x and y:
-            x = float(self.lineEdit_x.text())
-            y = float(self.lineEdit_y.text())
+            x = float(x)
+            y = float(y)
             try:
                 newGraph = gf.set_start_point(x, y, self.g)
                 if(newGraph != self.g):
@@ -281,6 +290,10 @@ class Ui_Lines(object):
                                    labelleft=True,
                                    labelbottom=True)
                     self.graphView.canvas.draw_idle()
+
+                    # update buttons
+                    self.pushButton_start.setEnabled(False)
+                    self.pushButton_reset.setEnabled(True)
 
             except ValueError as err:
                 msg = QtWidgets.QMessageBox.critical(self.centralwidget,
