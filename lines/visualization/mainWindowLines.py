@@ -243,14 +243,6 @@ class Ui_Lines(object):
         if self.level-1 < 0:
             self.pushButton_preLevel.setEnabled(False)
 
-    def back(self):
-        self.drawGraph(self.level)
-
-        self.pushButton_preLevel.setText("Previous level")
-        self.pushButton_preLevel.clicked.connect(self.preLevel)
-        if self.level < 0:
-            self.pushButton_preLevel.setEnabled(False)
-
     def setOptimalPoint(self):
         n = shortestPath.best_start_point(self.g)
         x = round(n.coord[0], 2)
@@ -290,10 +282,6 @@ class Ui_Lines(object):
                                    labelbottom=True)
                     self.graphView.canvas.draw_idle()
 
-                    """ #setze button back
-                    self.pushButton_preLevel.setText("back")
-                    self.pushButton_preLevel.setEnabled(True)
-                    self.pushButton_preLevel.clicked.connect(self.back) """
             except ValueError as err:
                 msg = QtWidgets.QMessageBox.critical(self.centralwidget,
                                                      "Error",
