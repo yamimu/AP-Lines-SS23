@@ -135,7 +135,12 @@ class Graph:
             w = self.nodes[i].euclidian_distance(self.nodes[j])
         self.adjacency_matrix[i][j] = w
         if self.undirected:
-            self.adjacency_matrix[j][i] = w   
+            self.adjacency_matrix[j][i] = w
+        
+        if (i,j) not in self.edge_list:
+            self.edge_list.append((i,j))
+        print("add edge: ",i,j)
+        print(self.edge_list)
         
 
     def remove_edge(self,edge):
@@ -200,8 +205,23 @@ class Graph:
                     edges.append((i,j))
                 if j < i:
                     edges.append((j,i))
+
         for i in edges:
+            print(i)
             self.edge_list.remove(i)
+
+        for i in range(len(self.edge_list)):
+            a,b = self.edge_list[i]
+            if a < j and b < j:
+                continue
+            if a > j:
+                a = a -1
+            if b > j:
+                b = b -1
+            self.edge_list[i] = (a,b)
+        
+        print(edges)
+
         self.adjacency_matrix = np.delete(self.adjacency_matrix,j,axis=0)
         self.adjacency_matrix = np.delete(self.adjacency_matrix,j,axis=1)
         self.nodes.remove(point)

@@ -54,7 +54,7 @@ def inital_step(g :Graph, start_index: int):
     for neigh_index in neighbour_indices:
         node :Node = Node(g.nodes[start_index].coord)
         ng.add_node(node,[0])
-        runner_info.append((node,g.nodes[neigh_index]))
+        runner_info.append((node,(start_index,neigh_index)))
     
     return ng, runner_info
     
@@ -70,7 +70,8 @@ def next_step(og :Graph,
       sides
     :param og: original graph to be simulated
     :param g: current iteration of graph to be further expanded
-    :param runner_info: information about expanding nodes
+    :param runner_info: information about expanding nodes and edge
+        along which they expand
     :param step_length: how far the expanding nodes are allowed to 
     travel
 
@@ -78,71 +79,90 @@ def next_step(og :Graph,
     """
 
     if len(runner_info) == 0:
-        return g, None
+        return g, []
+
+    runner_info = [info for info in runner_info if info[1] != -1]
+
+
+    info_rev_edges = [j[::-1] for _,j in runner_info]
+    for i,info in enumerate(runner_info):
+        for j, edge in enumerate(info_rev_edges):
+            if info[1] == edge:
+                if np.linalg.norm(info[0].coord 
+                                  - runner_info[j][0].coord)\
+                <= step_length:
+                    g.delete_node(info[0])
+                    print(runner_info[j][0])
+                    g.delete_node(runner_info[j][0])
+                    g.add_edge((og.nodes[info[1][0]],og.nodes[info[1][1]]))
+                    runner_info[i] = (0,-1)
+                    runner_info[j] = (0,-1)
+                    #g.add_edge((og.nodes[info[1][0]],og.nodes[info[1][1]]))
+                    
+                break
+        else:
+            continue
+        break
+    
+    runner_info = [info for info in runner_info if info[1] != -1]
+    if len(runner_info) == 0:
+        return g, []
+
+    print(runner_info)
+
     runner_info_coord_list :list[list[np.ndarray]] = \
-        np.array([[n.coord, m.coord] for n,m in runner_info])
+        np.array([[n.coord, og.nodes[e[1]].coord] for n,e in runner_info])
+    # give name
     vs :np.ndarray = runner_info_coord_list[:,1] \
                      - runner_info_coord_list[:,0]
     passed :list[bool] = np.linalg.norm(vs,axis = 1) <= step_length
     rest_distance :np.ndarray = step_length - np.linalg.norm(vs,axis=1)
     norm_vs: np.ndarray = np.linalg.norm(vs,axis = 1)
+    #give name
     us :np.ndarray = vs/ norm_vs[:,None]
 
     runner_new_coord :np.ndarray = runner_info_coord_list[:,0] \
                                     + step_length * us
 
     for i, new_coord in enumerate(runner_new_coord):
+        if (runner_info[i][1] == -1):
+            continue
         # if we don't reach a node we just update the coordinates
         if(not passed[i]):
             runner_info[i][0].coord = new_coord
             continue
         
         #we set the runner node to the target node 
-        og_node :Node = runner_info[i][1]
+        og_node :Node = og.nodes[runner_info[i][1][1]]
         og_node_index :int = og.nodes.index(og_node)
         
-        """
+        
         ### Isolated Code for further developement
         zg, zri = inital_step(og,og_node_index)
+        if len(zri) == 0:
+            continue
+
         zri = [info for info in zri if info[1] not in g.nodes]
+        g.nodes[g.nodes.index(runner_info[i][0])] = og_node
         if len(zri) > 0:
             zg ,zri = next_step(og, zg, zri, rest_distance[i])
-        
-
-        print([n.coord for n in zg.nodes])
-        print(f"zg: {len(zg.nodes)},\n zri: {len(zri)}")
-
-        ### end isolated code
-        """
-        
-
-        #here new runners are added 
-        neighbour_indices :list[int] = \
-            og.adjacency_matrix[og.nodes.index(og_node)].nonzero()[0]
-        new_edges :list[tuple[int,int]] = []
-        for j in neighbour_indices:
-            if not( (j,og_node_index) in g.edge_list 
-                   or (og_node_index,j) in g.edge_list):
-                new_edges.append((og_node_index,j))
-        
-        print(new_edges)
-        #print(neighbour_indices)
-        
-        for start_index,target_index in new_edges:
-            print(og.nodes[start_index].coord)
-            temp_node :Node = Node(og.nodes[start_index].coord)
-            g.add_node(temp_node,[start_index])
-            runner_info.append((temp_node,og.nodes[target_index]))
-
-        print(len([n for n in g.nodes]))
-        g.nodes[g.nodes.index(runner_info[i][0])] = og_node
-        runner_info[i] = (runner_info[i][1],-1)
-        
-    for info in runner_info:
-        if info[1] == -1:
-            runner_info.remove(info)
-    
-
+            for zinfo in zri:
+                # here second runner logic
+                try:
+                    if (g.index_of(og.nodes[zinfo[1][1]]),
+                        g.index_of(og.nodes[zinfo[1][0]]))\
+                    in g.edge_list:
+                        continue
+                except ValueError:
+                    ...
+                
+                g.add_node(zinfo[0],[og_node])
+                runner_info.append(zinfo)
+                    
+        #print([n.coord for n in zg.nodes]) 
+        #print(f"zg: {len(zg.nodes)},\n zri: {len(zri)}")
+        #print(runner_info)
+        runner_info[i] = (runner_info[i][0],-1)
     return g, runner_info
 
 
@@ -151,13 +171,13 @@ if __name__ == "__main__":
     og = Graph([Node([0,0]), Node([1,1]), Node([2,0]), Node([2,1])],
                [(0,1),(0,2),(1,2),(1,3)])
     g, runner_info = inital_step(og, 0)
-    step_length = .9
+    step_length = .8
     sum_step = 0
     max_dist = 6
-    
     while(sum_step < max_dist):
         sum_step += step_length
-        g, runner_info = next_step(og,g,runner_info, step_length) 
+        g, runner_info = next_step(og,g,runner_info, step_length)
+        
         #print([n.coord for n in g.nodes])
         #print([n.coord for n, i in runner_info])
         show_g = g.toNx()
