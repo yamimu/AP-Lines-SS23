@@ -253,8 +253,12 @@ class Ui_Lines(object):
 
     def setOptimalPoint(self):
         n = shortestPath.best_start_point(self.g)
-        self.lineEdit_x.setText(n.coord[0])
-        self.lineEdit_y.setText(n.coord[1])
+        x = round(n.coord[0], 2)
+        y = round(n.coord[1], 2)
+        self.lineEdit_x.clear()
+        self.lineEdit_x.insert(str(x))
+        self.lineEdit_y.clear()
+        self.lineEdit_y.insert(str(y))
 
     def start(self):
         """
