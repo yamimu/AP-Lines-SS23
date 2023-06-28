@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import networkx as nx 
 from ..base.graph import Graph, Node
 from ..base import game_functions as gf
+from ..optimization import shortestPath
 
 
 class Ui_Lines(object):
@@ -64,7 +65,7 @@ class Ui_Lines(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.pushButton_nextLevel.setFont(font)
-        self.pushButton_nextLevel.setObjectName("pushButton")
+        self.pushButton_nextLevel.setObjectName("pushButton_next")
         self.pushButton_nextLevel.clicked.connect(self.nextLevel)
 
         self.pushButton_preLevel = QtWidgets.QPushButton(self.centralwidget)
@@ -72,9 +73,17 @@ class Ui_Lines(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.pushButton_preLevel.setFont(font)
-        self.pushButton_preLevel.setObjectName("pushButton")
+        self.pushButton_preLevel.setObjectName("pushButton_pre")
         self.pushButton_preLevel.clicked.connect(self.preLevel)
         self.pushButton_preLevel.setEnabled(False)
+
+        self.pushButton_optimal = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_optimal.setGeometry(QtCore.QRect(830, 320, 110, 28))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.pushButton_optimal.setFont(font)
+        self.pushButton_optimal.setObjectName("pushButton_optimal")
+        self.pushButton_optimal.clicked.connect(self.setOptimalPoint)
 
         #setup labels
         self.label_lines = QtWidgets.QLabel(self.centralwidget)
@@ -166,6 +175,7 @@ class Ui_Lines(object):
         self.label_y.setText(_translate("Lines", "y:"))
         self.pushButton_nextLevel.setText(_translate("Lines", "Next Level"))
         self.pushButton_preLevel.setText(_translate("Lines", "Previous Level"))
+        self.pushButton_optimal.setText(_translate("Lines", "Optimal Point"))
 
     def createGraphs(self):
         """
@@ -241,6 +251,15 @@ class Ui_Lines(object):
         if self.level < 0:
             self.pushButton_preLevel.setEnabled(False)
 
+    def setOptimalPoint(self):
+        n = shortestPath.best_start_point(self.g)
+        x = round(n.coord[0], 2)
+        y = round(n.coord[1], 2)
+        self.lineEdit_x.clear()
+        self.lineEdit_x.insert(str(x))
+        self.lineEdit_y.clear()
+        self.lineEdit_y.insert(str(y))
+
     def start(self):
         """
         add start node and start animation
@@ -288,9 +307,6 @@ class Ui_Lines(object):
         TODO:
             - start animation
         '''
-        def setOptimalPoint(self):
-            #TODO: Punkt aus shortestPath.py def best_start_point()
-            i = 1
 
 
 if __name__ == '__main__':
