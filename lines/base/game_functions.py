@@ -108,8 +108,6 @@ def next_step(og :Graph,
     if len(runner_info) == 0:
         return g, []
 
-    print(runner_info)
-
     runner_info_coord_list :list[list[np.ndarray]] = \
         np.array([[n.coord, og.nodes[e[1]].coord] for n,e in runner_info])
     # give name
