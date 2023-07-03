@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.linalg import norm
 import math
-from .graph import Graph, Node
+from graph import Graph, Node
 
 def compute_intersection(edge_point1, edge_point2, point):
     """
@@ -58,7 +58,7 @@ def check_point_on_node(point,nodes):
     for nod in nodes:
         if nod.coord[0] == point.coord[0]:
             if nod.coord[1] == point.coord[1]:    
-                return [nod]
+                return nod
     return None
 
 def check_point_on_line(point, f):
@@ -219,7 +219,6 @@ def find_point_on_graph(g : Graph, point : Node):
             
             new_on_graph = check_point_on_node(new_point,g.nodes)
             if new_on_graph != None:
-                new_on_graph.append(new_point)
                 distance_list.append(((new_on_graph,None),c))
             on_edge = check_point_between_nodes(new_point,edge_points,f[0])
             if on_edge:
@@ -233,7 +232,7 @@ def find_point_on_graph(g : Graph, point : Node):
                     c = math.hypot(math.dist(new_point.coord,edge_points[1].coord),c)
                     if c < max_dis:
                         distance_list.append(((edge_points[1],None),c))
-                
+         
     if len(distance_list) > 0:
         smallest = distance_list[0]
         for i in distance_list:
@@ -248,10 +247,22 @@ if __name__ == "__main__":
     node1 = Node(coord = [0,4])
     node2 = Node(coord = [4,4])
     node3 = Node(coord = [4,0])
-    node4 = Node(coord = [5,5.1])
+    node4 = Node(coord = [4,4.1])
     edges = [(0,1),(0,3),(0,2),(1,2),(2,3)]
     g = Graph([node0,node1,node2,node3], edges)
     nod= find_point_on_graph(g,node4)
-    print(nod[0].coord)
-    print(nod[1][0].coord)
-    print(nod[1][1].coord) 
+    print(nod)
+    node4 = Node(coord = [0,4.4])
+    nod= find_point_on_graph(g,node4)
+    print(nod)
+    node4 = Node(coord = [4.4,0])
+    nod= find_point_on_graph(g,node4)
+    print(nod)
+    node4 = Node(coord = [-0.3,0])
+    nod= find_point_on_graph(g,node4)
+    print(nod)
+    node4 = Node(coord = [3,0])
+    nod= find_point_on_graph(g,node4)
+    print(nod)
+    #print(nod[1][0].coord)
+    #print(nod[1][1].coord) 
