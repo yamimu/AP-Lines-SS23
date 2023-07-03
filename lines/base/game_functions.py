@@ -25,11 +25,13 @@ def set_start_point(x : float ,y : float , g: Graph) -> Graph:
     graph_nodes = find_point_on_graph(g,start)
     
     if graph_nodes[1] is None:
+        g.add_start_node(graph_nodes[0])
         return g
     else:
         new_g :Graph = Graph(g.nodes,g.edge_list)
         new_g.remove_edge(graph_nodes[1])
         new_g.add_node(graph_nodes[0],graph_nodes[1])
+        new_g.add_start_node(graph_nodes[1])
         return new_g
          
             

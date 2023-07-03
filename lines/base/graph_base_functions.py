@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.linalg import norm
 import math
-from graph import Graph, Node
+from .graph import Graph, Node
 
 def compute_intersection(edge_point1, edge_point2, point):
     """
