@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import networkx as nx 
 from ..base.graph import Graph, Node
 from ..base import game_functions as gf
@@ -143,6 +144,11 @@ class Ui_Lines(object):
         self.createGraphs()
         self.drawGraph(0)
 
+        #set up the mathplotlib animation
+        self.animating = False
+        self.animation = None
+        self.step_length = 0.1
+
         self.retranslateUi(Lines)
         QtCore.QMetaObject.connectSlotsByName(Lines)
 
@@ -154,8 +160,8 @@ class Ui_Lines(object):
         self.label_start.setText(_translate("Lines", "Startpunkt:"))
         self.label_x.setText(_translate("Lines", "x:"))
         self.label_y.setText(_translate("Lines", "y:"))
-        self.pushButton_nextLevel.setText(_translate("Lines", "Next Level"))
-        self.pushButton_preLevel.setText(_translate("Lines", "Previous Level"))
+        self.pushButton_nextLevel.setText(_translate("Lines", "Next"))
+        self.pushButton_preLevel.setText(_translate("Lines", "Previous"))
         self.pushButton_optimal.setText(_translate("Lines", "Optimal Point"))
         self.pushButton_reset.setText(_translate("Lines", "Reset"))
 
@@ -213,6 +219,33 @@ class Ui_Lines(object):
             self.pushButton_start.setEnabled(True)
 
 
+    def create_animation(self):
+        # Define the update function for the animation
+        def update(frame):
+            self.ag, self.runner_info = gf.next_step(self.g, self.ag,self.runner_info,self.step_length)
+            # Clear the current plot
+            # self.figure.clear()
+
+            # Draw the updated graph
+            g = self.ag.toNx()
+            pos = nx.get_node_attributes(g, 'pos')
+            ax = self.figure.add_subplot()
+            labels = nx.get_node_attributes(g, 'label')
+            nx.draw_networkx(g, pos, ax=ax, labels=labels,)
+            ax.set_axis_on()
+            ax.tick_params(left=True,
+                           bottom=True,
+                           labelleft=True,
+                           labelbottom=True)
+
+            # Refresh the canvas
+            self.canvas.draw()
+
+        # Create the animation
+        self.animation = animation.FuncAnimation(self.figure, update, frames=100, interval=1)
+        self.animating = True
+            
+
     def nextLevel(self):
         self.drawGraph(self.level+1)
 
@@ -257,25 +290,31 @@ class Ui_Lines(object):
             x = float(x)
             y = float(y)
             try:
-                newGraph = gf.set_start_point(x, y, self.g)
-                if(newGraph != self.g):
-                    #draw new graph with startpoint as node
-                    self.figure.clear()
-                    newNxGraph = newGraph.toNx()
-                    pos = nx.get_node_attributes(newNxGraph, 'pos')
-                    ax = self.figure.add_subplot()
-                    labels = nx.get_node_attributes(newNxGraph, 'label')
-                    nx.draw_networkx(newNxGraph, pos, ax=ax, labels=labels)
-                    ax.set_axis_on()
-                    ax.tick_params(left=True,
-                                   bottom=True,
-                                   labelleft=True,
-                                   labelbottom=True)
-                    self.graphView.canvas.draw_idle()
+                self.g = gf.set_start_point(x, y, self.g)
+                startNode = [n for n in self.g.nodes if n.coord == (x,y)][0]
 
-                    # update buttons
-                    self.pushButton_start.setEnabled(False)
-                    self.pushButton_reset.setEnabled(True)
+                #draw new graph with startpoint as node
+                self.figure.clear()
+                newNxGraph = self.g.toNx()
+                pos = nx.get_node_attributes(newNxGraph, 'pos')
+                ax = self.figure.add_subplot()
+                labels = nx.get_node_attributes(newNxGraph, 'label')
+                nx.draw_networkx(newNxGraph, pos, ax=ax, labels=labels)
+                ax.set_axis_on()
+                ax.tick_params(left=True,
+                                bottom=True,
+                                labelleft=True,
+                                labelbottom=True)
+                self.graphView.canvas.draw_idle()
+
+                newGraph = self.g
+
+                # update buttons
+                self.pushButton_start.setEnabled(False)
+                self.pushButton_reset.setEnabled(True)
+                
+                self.ag , self.runner_info = gf.inital_step(self.g, self.g.nodes.index(startNode))
+                self.create_animation()
 
             except ValueError as err:
                 msg = QtWidgets.QMessageBox.critical(self.centralwidget,
@@ -285,11 +324,6 @@ class Ui_Lines(object):
             msg = QtWidgets.QMessageBox.critical(self.centralwidget,
                                                 "Error",
                                                  "Please enter a start point!")
-        #
-        '''
-        TODO:
-            - start animation
-        '''
 
 
 if __name__ == '__main__':
