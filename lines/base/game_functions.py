@@ -23,7 +23,7 @@ def set_start_point(x : float ,y : float , g: Graph) -> Graph:
         """
     start :Node = Node((x,y))
     graph_nodes = find_point_on_graph(g,start)
-    
+    print(graph_nodes)
     if graph_nodes[1] is None:
         g.add_start_node(graph_nodes[0])
         return g
@@ -31,7 +31,7 @@ def set_start_point(x : float ,y : float , g: Graph) -> Graph:
         new_g :Graph = Graph(g.nodes,g.edge_list)
         new_g.remove_edge(graph_nodes[1])
         new_g.add_node(graph_nodes[0],graph_nodes[1])
-        new_g.add_start_node(graph_nodes[1])
+        new_g.add_start_node(graph_nodes[0])
         return new_g
          
             
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     from  ..optimization import shortestPath
     og = Graph([Node([0,0]), Node([1,1]), Node([2,0]), Node([2,1])],
                [(0,1),(0,2),(1,2),(1,3)])
-    g, runner_info = inital_step(og, 0)
+    g, runner_info = initial_step(og, 0)
     step_length = .8
     sum_step = 0
     max_dist = 6

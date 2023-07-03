@@ -19,7 +19,6 @@ import networkx as nx
 from ..base.graph import Graph, Node
 from ..base import game_functions as gf
 from ..optimization import shortestPath
-from .graph_test import AnimGraph
 import copy
 
 
@@ -283,7 +282,7 @@ class Ui_Lines(object):
                 self.pushButton_nextLevel.setEnabled(False)
                 self.pushButton_preLevel.setEnabled(False)
                 
-                self.start_index = self.g.index_of([n for n in self.g.nodes if all(n.coord == [x,y])][0])
+                self.start_index = self.g.nodes.index(self.g.start_nodes[-1])
                 self.ag, self.runner_info = gf.initial_step(self.g, self.start_index)
                  
                 def update(frame):
@@ -336,7 +335,7 @@ if __name__ == '__main__':
     sys.path.append('..')
 
     app = QApplication(sys.argv)
-    Lines = AnimGraph()
+    Lines = QMainWindow()
     mainWindow = Ui_Lines()
     mainWindow.setupUi(Lines)   
     Lines.show()
