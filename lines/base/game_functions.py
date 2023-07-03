@@ -34,7 +34,7 @@ def set_start_point(x : float ,y : float , g: Graph) -> Graph:
          
             
 
-def inital_step(g :Graph, start_index: int): 
+def initial_step(g :Graph, start_index: int): 
     """
     setup for animation of graph, creates one node for each edge of the
     start node returns graph with n + 1 nodes n being amount of edges 
@@ -92,7 +92,7 @@ def next_step(og :Graph,
                                   - runner_info[j][0].coord)\
                 <= step_length:
                     g.delete_node(info[0])
-                    print(runner_info[j][0])
+                    #print(runner_info[j][0])
                     g.delete_node(runner_info[j][0])
                     g.add_edge((og.nodes[info[1][0]],og.nodes[info[1][1]]))
                     runner_info[i] = (0,-1)
@@ -110,13 +110,11 @@ def next_step(og :Graph,
 
     runner_info_coord_list :list[list[np.ndarray]] = \
         np.array([[n.coord, og.nodes[e[1]].coord] for n,e in runner_info])
-    # give name
     vs :np.ndarray = runner_info_coord_list[:,1] \
                      - runner_info_coord_list[:,0]
     passed :list[bool] = np.linalg.norm(vs,axis = 1) <= step_length
     rest_distance :np.ndarray = step_length - np.linalg.norm(vs,axis=1)
     norm_vs: np.ndarray = np.linalg.norm(vs,axis = 1)
-    #give name
     us :np.ndarray = vs/ norm_vs[:,None]
 
     runner_new_coord :np.ndarray = runner_info_coord_list[:,0] \
@@ -136,7 +134,7 @@ def next_step(og :Graph,
         
         
         ### Isolated Code for further developement
-        zg, zri = inital_step(og,og_node_index)
+        zg, zri = initial_step(og,og_node_index)
         if len(zri) == 0:
             continue
 

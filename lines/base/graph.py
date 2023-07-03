@@ -139,8 +139,6 @@ class Graph:
         
         if (i,j) not in self.edge_list:
             self.edge_list.append((i,j))
-        print("add edge: ",i,j)
-        print(self.edge_list)
         
 
     def remove_edge(self,edge):
@@ -207,7 +205,6 @@ class Graph:
                     edges.append((j,i))
 
         for i in edges:
-            print(i)
             self.edge_list.remove(i)
 
         for i in range(len(self.edge_list)):
@@ -219,8 +216,6 @@ class Graph:
             if b > j:
                 b = b -1
             self.edge_list[i] = (a,b)
-        
-        print(edges)
 
         self.adjacency_matrix = np.delete(self.adjacency_matrix,j,axis=0)
         self.adjacency_matrix = np.delete(self.adjacency_matrix,j,axis=1)

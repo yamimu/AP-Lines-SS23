@@ -9,35 +9,38 @@ from ..base.game_functions import *
 
 
 
-class MainWindow(QMainWindow):
-    def __init__(self,og, start_index, step_length):
+class AnimGraph(QMainWindow):
+    def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Animated Graph")
 
         # Create a QVBoxLayout to hold the Matplotlib figure canvas
-        layout = QVBoxLayout()
-
-        # Create a widget to hold the figure canvas
-        widget = QWidget()
-        widget.setLayout(layout)
-        self.setCentralWidget(widget)
-
-        # Create an empty network graph
-        self.og = og
-        self.step_length = step_length
-        self.g ,self.runner_info = inital_step(og,start_index)
+        self.layout = QVBoxLayout()
 
         # Create a Matplotlib figure and canvas
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
-        layout.addWidget(self.canvas)
+        self.layout.addWidget(self.canvas)
+
+        # Create a widget to hold the figure canvas
+        widget = QWidget()
+        widget.setLayout(self.layout)
+        self.setCentralWidget(widget)
+
+
+    def setup(self, og, start_index, step_length):
+        # Create an empty network graph
+        self.og = og
+        self.step_length = step_length
+        self.g ,self.runner_info = inital_step(og,start_index)
 
         # Set up the Matplotlib animation
         self.animating = False
         self.animation = None
 
         self.create_animation()
+
 
     def create_animation(self):
         # Define the update function for the animation
@@ -67,8 +70,9 @@ class MainWindow(QMainWindow):
             self.canvas.draw()
 
         # Create the animation
-        self.animation = animation.FuncAnimation(self.figure, update, frames=100, interval=1)
+        self.animation = animation.FuncAnimation(self.figure, update, frames=80, interval=0)
         self.animating = True
+        
 
 
 if __name__ == "__main__":
@@ -76,6 +80,7 @@ if __name__ == "__main__":
                [(0,1),(0,2),(1,2),(1,3)])
 
     app = QApplication(sys.argv)
-    window = MainWindow(g1, 0, 0.1)
+    window = AnimGraph()
+    window.setup(g1, 0, 0.1)
     window.show()
     sys.exit(app.exec_())
