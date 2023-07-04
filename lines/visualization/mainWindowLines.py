@@ -62,7 +62,7 @@ class Ui_Lines(object):
         self.pushButton_reset.setGeometry(QtCore.QRect(960, 260, 93, 28))
         self.pushButton_reset.setFont(font)
         self.pushButton_reset.setObjectName("pushButton_reset")
-        self.pushButton_reset.clicked.connect(self.back)
+        self.pushButton_reset.clicked.connect(self.reset)
         self.pushButton_reset.setEnabled(False)
 
         self.pushButton_nextLevel = QtWidgets.QPushButton(self.centralwidget)
@@ -139,6 +139,11 @@ class Ui_Lines(object):
         self.statusbar = QtWidgets.QStatusBar(Lines)
         self.statusbar.setObjectName("statusbar")
         Lines.setStatusBar(self.statusbar)
+
+        # set up progress bar
+        self.pbar = QtWidgets.QProgressBar(self.centralwidget)
+        self.pbar.setGeometry(830, 530, 222, 28)
+        self.pbar.setVisible(False)
 
         #create networkx graph
         self.createGraphs()
@@ -242,7 +247,7 @@ class Ui_Lines(object):
             self.pushButton_preLevel.setEnabled(False)
         
 
-    def back(self):
+    def reset(self):
         self.drawGraph(self.level)
 
 
@@ -297,6 +302,7 @@ class Ui_Lines(object):
                 self.pushButton_start.setEnabled(False)
                 self.pushButton_nextLevel.setEnabled(False)
                 self.pushButton_preLevel.setEnabled(False)
+                self.pbar.setVisible(True)
                 self.run_animation()
                 
 
@@ -314,9 +320,13 @@ class Ui_Lines(object):
         self.start_index = self.g.nodes.index(self.g.start_nodes[-1])
         self.ag, self.runner_info = gf.initial_step(self.g, self.start_index)
         framecount = 120
+
+        #init progress bar
+        self.pbar.setMinimum(0)
+        self.pbar.setMaximum(framecount-1)
             
         def update(frame):
-            print(frame)
+            self.pbar.setValue(frame)
             # Add a new node to the graph
             self.ag , self.runner_info = gf.next_step(self.g, self.ag, self.runner_info, self.step_length)
             # Clear the current plot
@@ -356,6 +366,9 @@ class Ui_Lines(object):
                     self.pushButton_nextLevel.setEnabled(True)
                 if self.level > 0:
                     self.pushButton_preLevel.setEnabled(True)
+
+                self.pbar.setValue(0)
+                self.pbar.setVisible(False)
             
         self.animation = animation.FuncAnimation(self.figure, update, frames=framecount, interval=0, repeat=False)
 
@@ -367,6 +380,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     Lines = QMainWindow()
     mainWindow = Ui_Lines()
-    mainWindow.setupUi(Lines)   
+    mainWindow.setupUi(Lines)
+    Lines.setMinimumSize(Lines.size())   
     Lines.show()
     sys.exit(app.exec_())
