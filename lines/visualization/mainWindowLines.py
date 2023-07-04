@@ -205,9 +205,17 @@ class Ui_Lines(object):
 
             pos = nx.get_node_attributes(g, 'pos')
             ax = self.figure.add_subplot()
+
+            #draw label
             labels = nx.get_node_attributes(g, 'label')
-            
-            nx.draw_networkx(g, pos, ax=ax, labels=labels)
+            pos_label = {}
+            y_off = 0.2
+            for k, v in pos.items():
+                pos_label[k] = (v[0], v[1]+y_off)
+            nx.draw_networkx_labels(g, pos_label, labels)
+
+            #draw graph
+            nx.draw_networkx(g, pos, ax=ax, with_labels=False, node_size=100, node_color='black', edge_color=[0.6784,0.6784,0.6784], width=3.0)
             ax.set_axis_on()
             ax.tick_params(left=True,
                            bottom=True,
@@ -268,8 +276,16 @@ class Ui_Lines(object):
                 newNxGraph = self.g.toNx()
                 pos = nx.get_node_attributes(newNxGraph, 'pos')
                 ax = self.figure.add_subplot()
+
+                #draw label
                 labels = nx.get_node_attributes(newNxGraph, 'label')
-                nx.draw_networkx(newNxGraph, pos, ax=ax, labels=labels)
+                pos_label = {}
+                y_off = 0.2
+                for k, v in pos.items():
+                    pos_label[k] = (v[0], v[1]+y_off)
+                nx.draw_networkx_labels(newNxGraph, pos_label, labels)
+
+                nx.draw_networkx(newNxGraph, pos, ax=ax, with_labels=False, node_size=100, node_color='black', edge_color=[0.6784,0.6784,0.6784], width=3.0)
                 ax.set_axis_on()
                 ax.tick_params(left=True,
                                 bottom=True,
@@ -316,17 +332,22 @@ class Ui_Lines(object):
             # Draw the old graph
             newNxGraph = self.g.toNx()
             pos = nx.get_node_attributes(newNxGraph, 'pos')
+            #draw label
             labels = nx.get_node_attributes(newNxGraph, 'label')
-            nx.draw_networkx(newNxGraph, pos, ax=ax, labels=labels)
+            pos_label = {}
+            y_off = 0.2
+            for k, v in pos.items():
+                pos_label[k] = (v[0], v[1]+y_off)
+            nx.draw_networkx_labels(newNxGraph, pos_label, labels)
+
+            nx.draw_networkx(newNxGraph, pos, ax=ax,labels=labels, with_labels=False, node_size=100, node_color='black', edge_color=[0.6784,0.6784,0.6784], width=3.0)
             ax.set_axis_on()
 
             # Draw the updated graph
             g = self.ag.toNx()
             pos = nx.get_node_attributes(g, 'pos')
             labels = nx.get_node_attributes(g, 'label')
-            #nx.draw_networkx(self.g.toNx(),pos, 
-            #                 labels = nx.get_node_attributes(self.g.toNx(),'label'),)
-            nx.draw_networkx(g, pos, ax=ax,with_labels = False, edge_color = ['red'], nodelist = [])
+            nx.draw_networkx(g, pos, ax=ax, with_labels = False, edge_color = 'red', nodelist = [], width=3.0)
 
             #activate button after animation
             if frame == framecount-1:
