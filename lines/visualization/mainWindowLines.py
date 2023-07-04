@@ -323,11 +323,6 @@ class Ui_Lines(object):
             self.figure.clear()
 
             ax = self.figure.add_subplot()
-            ax.set_axis_on()
-            ax.tick_params(left=True,
-                        bottom=True,
-                        labelleft=True,
-                        labelbottom=True)
             
             # Draw the old graph
             newNxGraph = self.g.toNx()
@@ -341,13 +336,18 @@ class Ui_Lines(object):
             nx.draw_networkx_labels(newNxGraph, pos_label, labels)
 
             nx.draw_networkx(newNxGraph, pos, ax=ax,labels=labels, with_labels=False, node_size=100, node_color='black', edge_color=[0.6784,0.6784,0.6784], width=3.0)
-            ax.set_axis_on()
 
             # Draw the updated graph
             g = self.ag.toNx()
             pos = nx.get_node_attributes(g, 'pos')
             labels = nx.get_node_attributes(g, 'label')
             nx.draw_networkx(g, pos, ax=ax, with_labels = False, edge_color = 'red', nodelist = [], width=3.0)
+            ax.set_axis_on()
+            ax.tick_params(left=True,
+                        bottom=True,
+                        labelleft=True,
+                        labelbottom=True)
+
 
             #activate button after animation
             if frame == framecount-1:
