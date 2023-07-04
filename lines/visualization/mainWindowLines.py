@@ -232,6 +232,13 @@ class Ui_Lines(object):
             self.pushButton_start.setEnabled(True)
 
     def nextLevel(self):
+        """
+        switch to the next level
+        :param self:
+
+        :return: None
+        :raises: None
+        """
         self.drawGraph(self.level+1)
 
         self.pushButton_preLevel.setEnabled(True)
@@ -240,6 +247,13 @@ class Ui_Lines(object):
         
 
     def preLevel(self):
+        """
+        switch to the previous level
+        :param self:
+
+        :return: None
+        :raises: None
+        """
         self.drawGraph(self.level-1)
 
         self.pushButton_nextLevel.setEnabled(True)
@@ -248,10 +262,24 @@ class Ui_Lines(object):
         
 
     def reset(self):
+        """
+        set graph back to original state
+        :param self:
+
+        :return: None
+        :raises: None
+        """
         self.drawGraph(self.level)
 
 
     def setOptimalPoint(self):
+        """
+        calculate best starting point for current graph and show point on line edits
+        :param self:
+
+        :retun: None
+        :raises: None
+        """
         n = shortestPath.best_start_point(self.g)
         x = round(n.coord[0], 5)
         y = round(n.coord[1], 5)
@@ -317,6 +345,13 @@ class Ui_Lines(object):
 
 
     def run_animation(self):
+        """
+        run animation with fixed amount of frames
+        :param self:
+
+        :return: None
+        :raises: None
+        """
         self.start_index = self.g.nodes.index(self.g.start_nodes[-1])
         self.ag, self.runner_info = gf.initial_step(self.g, self.start_index)
         framecount = 120
@@ -326,6 +361,13 @@ class Ui_Lines(object):
         self.pbar.setMaximum(framecount-1)
             
         def update(frame):
+            """
+            generate a frame for the animation
+            :param self:
+
+            :return: None
+            :raises: None
+            """
             self.pbar.setValue(frame)
             # Add a new node to the graph
             self.ag , self.runner_info = gf.next_step(self.g, self.ag, self.runner_info, self.step_length)
