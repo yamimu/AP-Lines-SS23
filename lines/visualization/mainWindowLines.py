@@ -52,14 +52,20 @@ class Ui_Lines(object):
         layout.addWidget(self.graphView.canvas)
 
         #setup buttons
+        self.pushButton_setPoint = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_setPoint.setGeometry(830, 260, 222, 28)
+        self.pushButton_setPoint.setFont(font)
+        self.pushButton_setPoint.setObjectName("pushButton_setPoint")
+        self.pushButton_setPoint.clicked.connect(self.setStartPoint)
+
         self.pushButton_start = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_start.setGeometry(QtCore.QRect(830, 260, 93, 28))
+        self.pushButton_start.setGeometry(QtCore.QRect(830, 300, 93, 28))
         self.pushButton_start.setFont(font)
         self.pushButton_start.setObjectName("pushButton_start")
         self.pushButton_start.clicked.connect(self.start)
 
         self.pushButton_reset = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_reset.setGeometry(QtCore.QRect(960, 260, 93, 28))
+        self.pushButton_reset.setGeometry(QtCore.QRect(960, 300, 93, 28))
         self.pushButton_reset.setFont(font)
         self.pushButton_reset.setObjectName("pushButton_reset")
         self.pushButton_reset.clicked.connect(self.reset)
@@ -79,7 +85,7 @@ class Ui_Lines(object):
         self.pushButton_preLevel.setEnabled(False)
 
         self.pushButton_optimal = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_optimal.setGeometry(QtCore.QRect(830, 320, 110, 28))
+        self.pushButton_optimal.setGeometry(QtCore.QRect(830, 360, 110, 28))
         self.pushButton_optimal.setFont(font)
         self.pushButton_optimal.setObjectName("pushButton_optimal")
         self.pushButton_optimal.clicked.connect(self.setOptimalPoint)
@@ -169,6 +175,7 @@ class Ui_Lines(object):
         self.pushButton_preLevel.setText(_translate("Lines", "Previous"))
         self.pushButton_optimal.setText(_translate("Lines", "Optimal Point"))
         self.pushButton_reset.setText(_translate("Lines", "Reset"))
+        self.pushButton_setPoint.setText(_translate("Lines", "Add Point"))
 
     def createGraphs(self):
         """
@@ -230,6 +237,7 @@ class Ui_Lines(object):
             self.label_lines.setText(f"Lines - Level {level}")
             self.pushButton_reset.setEnabled(False)
             self.pushButton_start.setEnabled(True)
+            self.pushButton_setPoint.setEnabled(True)
 
     def nextLevel(self):
         """
@@ -270,6 +278,7 @@ class Ui_Lines(object):
         :raises: None
         """
         self.drawGraph(self.level)
+        self.pushButton_setPoint.setEnabled(True)
 
 
     def setOptimalPoint(self):
@@ -288,6 +297,46 @@ class Ui_Lines(object):
         self.lineEdit_y.clear()
         self.lineEdit_y.insert(str(y))
 
+    def setStartPoint(self):
+        x = self.lineEdit_x.text().replace(",", ".")
+        y = self.lineEdit_y.text().replace(",", ".")
+        if x and y:
+            x = float(x)
+            y = float(y)
+            try:
+                self.g = gf.set_start_point(x, y, self.g)
+                self.pushButton_setPoint.setEnabled(False)
+                self.pushButton_reset.setEnabled(True)
+
+                #draw graph with start point
+                self.figure.clear()
+                newNxGraph = self.g.toNx()
+                pos = nx.get_node_attributes(newNxGraph, 'pos')
+                ax = self.figure.add_subplot()
+
+                #draw label
+                labels = nx.get_node_attributes(newNxGraph, 'label')
+                pos_label = {}
+                y_off = 0.2
+                for k, v in pos.items():
+                    pos_label[k] = (v[0], v[1]+y_off)
+                nx.draw_networkx_labels(newNxGraph, pos_label, labels)
+
+                nx.draw_networkx(newNxGraph, pos, ax=ax, with_labels=False, node_size=100, node_color='black', edge_color=[0.6784,0.6784,0.6784], width=3.0)
+                ax.set_axis_on()
+                ax.tick_params(left=True,
+                                bottom=True,
+                                labelleft=True,
+                                labelbottom=True)
+                self.graphView.canvas.draw_idle()
+            except ValueError as err:
+                msg = QtWidgets.QMessageBox.critical(self.centralwidget,
+                                                     "Error",
+                                                     err.args[0])
+        else:
+            msg = QtWidgets.QMessageBox.critical(self.centralwidget,
+                                                "Error",
+                                                 "Please enter a start point!")
 
     def start(self):
         """
@@ -297,14 +346,13 @@ class Ui_Lines(object):
         :return: None
         :raises: None
         """
-        x = self.lineEdit_x.text().replace(",", ".")
-        y = self.lineEdit_y.text().replace(",", ".")
-        if x and y:
-            x = float(x)
-            y = float(y)
-            try:
-                self.animating = True
-                self.g = gf.set_start_point(x, y, self.g) 
+        #try to add starting point if no one is given
+        if self.g.start_nodes == []:
+            self.setStartPoint()
+
+            #start animation
+            if self.g.start_nodes != []:
+                #draw graph with start point
                 self.figure.clear()
                 newNxGraph = self.g.toNx()
                 pos = nx.get_node_attributes(newNxGraph, 'pos')
@@ -332,17 +380,6 @@ class Ui_Lines(object):
                 self.pushButton_preLevel.setEnabled(False)
                 self.pbar.setVisible(True)
                 self.run_animation()
-                
-
-            except ValueError as err:
-                msg = QtWidgets.QMessageBox.critical(self.centralwidget,
-                                                     "Error",
-                                                     err.args[0])
-        else:
-            msg = QtWidgets.QMessageBox.critical(self.centralwidget,
-                                                "Error",
-                                                 "Please enter a start point!")
-
 
     def run_animation(self):
         """
