@@ -234,6 +234,21 @@ class Ui_Lines(object):
         g5 = Graph([node0,node1,node2,node3,node4,node5,node6,node7,node8,node9,node10], edges5)
         self.graphs.append(g5)
         
+        node0 = Node(coord = [2,1])
+        node1 = Node(coord = [1,3])
+        node2 = Node(coord = [1.5,5])
+        node3 = Node(coord = [3,5])
+        node4 = Node(coord=[3,7])
+        node5 = Node(coord = [3,10])
+        node6 = Node(coord = [6,7])
+        node7 = Node(coord = [5,3])
+        node8 = Node(coord = [8,3])
+        node9 = Node(coord=[8,5])
+        node10 = Node(coord = [10,4])
+        edges6 = [(0,1),(0,3),(0,7),(1,2),(1,3),(2,4),(2,5),(3,4),(3,6),(3,7),(4,5),(4,6),(5,6),(6,7),(6,9),(7,8),(7,9),(8,9),(8,10),(9,10)]
+        g6 = Graph([node0,node1,node2,node3,node4,node5,node6,node7,node8,node9,node10], edges6)
+        self.graphs.append(g6)
+        
         
     
     def drawGraph(self, level):
