@@ -23,7 +23,7 @@ def set_start_point(x : float ,y : float , g: Graph) -> Graph:
         """
     start :Node = Node((x,y))
     graph_nodes = find_point_on_graph(g,start)
-    print(graph_nodes)
+    #print(graph_nodes)
     if graph_nodes[1] is None:
         g.add_start_node(graph_nodes[0])
         return g
@@ -85,14 +85,14 @@ def next_step(og :Graph,
 
     runner_info = [info for info in runner_info if info[1] != -1]
 
-
     info_rev_edges = [j[::-1] for _,j in runner_info]
     for i,info in enumerate(runner_info):
         for j, edge in enumerate(info_rev_edges):
             if info[1] == edge:
                 if np.linalg.norm(info[0].coord 
                                   - runner_info[j][0].coord)\
-                <= step_length:
+                < step_length:
+                    print(edge)
                     g.delete_node(info[0])
                     #print(runner_info[j][0])
                     g.delete_node(runner_info[j][0])
@@ -100,11 +100,8 @@ def next_step(og :Graph,
                     runner_info[i] = (0,-1)
                     runner_info[j] = (0,-1)
                     #g.add_edge((og.nodes[info[1][0]],og.nodes[info[1][1]]))
-                    
                 break
-        else:
-            continue
-        break
+        
     
     runner_info = [info for info in runner_info if info[1] != -1]
     if len(runner_info) == 0:
@@ -134,13 +131,13 @@ def next_step(og :Graph,
         og_node :Node = og.nodes[runner_info[i][1][1]]
         og_node_index :int = og.nodes.index(og_node)
         
-        
-        ### Isolated Code for further developement
         zg, zri = initial_step(og,og_node_index)
-        if len(zri) == 0:
+        if not zri:
             continue
 
-        zri = [info for info in zri if info[1] not in g.nodes]
+        if og_node in g.nodes:
+            continue
+
         g.nodes[g.nodes.index(runner_info[i][0])] = og_node
         if len(zri) > 0:
             zg ,zri = next_step(og, zg, zri, rest_distance[i])
