@@ -192,6 +192,49 @@ class Ui_Lines(object):
         edges2 = [(0,1),(0,3),(0,2),(2,3),]
         g2 = Graph([node5,node1,node2,node3], edges2)
         self.graphs.append(g2)
+        
+        node0 = Node(coord = [1,1])
+        node1 = Node(coord = [2,8])
+        node2 = Node(coord = [4,4])
+        node3 = Node(coord = [8,8])
+        node4 = Node(coord=[10,1])
+        edges3 = [(0,1),(0,4),(1,2),(1,3),(2,3),(3,4)]
+        g3 = Graph([node0,node1,node2,node3,node4], edges3)
+        self.graphs.append(g3)
+        
+        node0 = Node(coord = [2,4])
+        node1 = Node(coord = [2,7])
+        node2 = Node(coord = [5,10])
+        node3 = Node(coord = [9,8])
+        node4 = Node(coord=[5,7])
+        node5 = Node(coord = [5,4])
+        node6 = Node(coord = [1,6])
+        node7 = Node(coord = [7,6])
+        node8 = Node(coord = [7,5])
+        node9 = Node(coord=[10,6])
+        node10 = Node(coord = [10,5])
+        node11 = Node(coord=[9,3])
+        
+        edges4 = [(0,1),(0,5),(0,6),(1,2),(1,4),(2,3),(2,4),(3,7),(3,9),(4,5),(4,7),(5,6),(5,8),(6,11),(7,9),(8,10),(8,11),(10,11)]
+        g4 = Graph([node0,node1,node2,node3,node4,node5,node6,node7,node8,node9,node10,node11], edges4)
+        self.graphs.append(g4)
+        
+        node0 = Node(coord = [2,1])
+        node1 = Node(coord = [2,5])
+        node2 = Node(coord = [4,3])
+        node3 = Node(coord = [2,9])
+        node4 = Node(coord=[4,7])
+        node5 = Node(coord = [7,3])
+        node6 = Node(coord = [7,7])
+        node7 = Node(coord = [9,9])
+        node8 = Node(coord = [9,5])
+        node9 = Node(coord=[9,1])
+        node10 = Node(coord = [5,5])
+        edges5 = [(0,1),(0,2),(1,2),(1,3),(1,4),(1,10),(2,5),(2,9),(3,4),(4,6),(4,7),(5,8),(5,9),(5,10),(6,7),(6,8),(6,10)]
+        g5 = Graph([node0,node1,node2,node3,node4,node5,node6,node7,node8,node9,node10], edges5)
+        self.graphs.append(g5)
+        
+        
     
     def drawGraph(self, level):
         """
