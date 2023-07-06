@@ -5,7 +5,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.animation as animation
 from ..base.graph import Node, Graph
-from ..base.game_functions import *
+from ..visualization.game_functions import *
 
 
 
