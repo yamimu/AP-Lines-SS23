@@ -1,6 +1,5 @@
-from typing import Tuple
 from .graph import Graph, Node
-from .graph_base_functions import find_point_on_graph
+from .graph_functions import find_point_on_graph
 
 import numpy as np
 import networkx as nx
@@ -161,7 +160,7 @@ def next_step(og :Graph,
 
 
 if __name__ == "__main__":
-    from  ..optimization import shortestPath
+    from  ..optimization import optimization
     og = Graph([Node([0,0]), Node([1,1]), Node([2,0]), Node([2,1])],
                [(0,1),(0,2),(1,2),(1,3)])
     g, runner_info = initial_step(og, 0)

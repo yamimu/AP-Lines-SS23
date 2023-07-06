@@ -1,5 +1,4 @@
-from ..base.graph import Graph, Node
-from ..base.graph_base_functions import find_point_on_graph
+from .base.graph import Graph, Node
 import copy
 import numpy as np
 
@@ -21,7 +20,7 @@ def best_start_point(graph):
     """
     
     #we need the index and 
-    res_floyd = floydwarshall(graph,True)
+    res_floyd = floydWarshall(graph,True)
     floydwarshall_matrix = res_floyd[0]
     max_floyd = np.max(floydwarshall_matrix,axis= 0)
     best_index = np.argmin(max_floyd)
@@ -36,7 +35,7 @@ def best_start_point(graph):
     walk_towards_A = 1/2 * (floydwarshall_matrix[best_index][a_index]\
                         - floydwarshall_matrix[best_index][b_index])
     
-    na_index = construct_path(best_index, a_index, *res_floyd)[1]
+    na_index = construct_path(best_index, a_index, res_floyd[1])[1]
     best_node ,na = graph.nodes[best_index], graph.nodes[na_index]
 
     coord_bp = walk_towards_A / graph.adjacency_matrix[best_index][na_index]\
@@ -58,11 +57,10 @@ def best_start_node_index(graph):
     :raises: none
     """
 
-    floydwarshall_matrix = floydwarshall(graph)
+    floydwarshall_matrix = floydWarshall(graph)
     best_index = np.argmin(np.max(floydwarshall_matrix,axis = 0)) #
     return best_index
 
-#doesn't fully work
 def dijkstra(graph, start_node):
         """
         compute the shortest distance from the start node to any node 
@@ -100,7 +98,7 @@ def dijkstra(graph, start_node):
 
 
 
-def floydwarshall(graph, return_paths = False):
+def floydWarshall(graph, return_paths = False):
         
         next = np.full_like(graph.adjacency_matrix,-1,int)
         next[graph.adjacency_matrix.nonzero()] = graph.adjacency_matrix\
@@ -123,7 +121,7 @@ def floydwarshall(graph, return_paths = False):
              return (M, next)
         return M
 
-def construct_path(u,v, graph, next):
+def construct_path(u,v, next):
     # If there's no path between
     # node u and v, simply return
     # an empty array
@@ -154,11 +152,12 @@ if __name__ == "__main__":
                 Node([6,0])],\
                     [(0,1),(1,2)])
     
-    res = floydwarshall(g,True)
+    res = floydWarshall(g,True)
 
     print(best_start_node_index(g))
     print(best_start_point(g))
-    print(floydwarshall(g,True)[1])
+    print(floydWarshall(g,True)[1])
+    print(best_start_point(g))
     #print(g.adjacency_matrix)
     #g.delete_node(node0)
     #print(g.adjacency_matrix)

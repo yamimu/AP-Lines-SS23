@@ -18,8 +18,8 @@ import matplotlib.animation as animation
 import networkx as nx 
 import numpy as np
 from ..base.graph import Graph, Node
-from ..base import game_functions as gf
-from ..optimization import shortestPath
+from . import game_functions as gf
+from .. import optimization
 import copy
 
 
@@ -339,7 +339,7 @@ class Ui_Lines(object):
         :retun: None
         :raises: None
         """
-        n = shortestPath.best_start_point(self.g)
+        n = optimization.best_start_point(self.g)
         x = round(n.coord[0], 5)
         y = round(n.coord[1], 5)
         self.lineEdit_x.clear()
@@ -413,7 +413,7 @@ class Ui_Lines(object):
         """
         self.start_index = self.g.nodes.index(self.g.start_nodes[-1])
         self.ag, self.runner_info = gf.initial_step(self.g, self.start_index)
-        floyd_matrix = shortestPath.floydwarshall(self.g)
+        floyd_matrix = optimization.floydWarshall(self.g)
         worst_index = np.where(floyd_matrix[self.start_index] 
                                == np.max(floyd_matrix[self.start_index]))
         framecount = int((floyd_matrix[self.start_index][worst_index]\
@@ -482,9 +482,6 @@ class Ui_Lines(object):
 
 
 if __name__ == '__main__':
-
-    sys.path.append('..')
-
     app = QApplication(sys.argv)
     Lines = QMainWindow()
     mainWindow = Ui_Lines()
