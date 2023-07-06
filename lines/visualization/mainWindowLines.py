@@ -208,7 +208,7 @@ class Ui_Lines(object):
         node3 = Node(coord = [9,8])
         node4 = Node(coord=[5,7])
         node5 = Node(coord = [5,4])
-        node6 = Node(coord = [1,6])
+        node6 = Node(coord = [5,1])
         node7 = Node(coord = [7,6])
         node8 = Node(coord = [7,5])
         node9 = Node(coord=[10,6])
