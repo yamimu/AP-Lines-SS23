@@ -417,7 +417,7 @@ class Ui_Lines(object):
         worst_index = np.where(floyd_matrix[self.start_index] 
                                == np.max(floyd_matrix[self.start_index]))
         framecount = int((floyd_matrix[self.start_index][worst_index]\
-                    + 0.5*np.max(self.g.adjacency_matrix[worst_index]))\
+                    + 0.7*np.max(self.g.adjacency_matrix[worst_index]))\
                         /self.step_length)+1
 
         
@@ -478,7 +478,7 @@ class Ui_Lines(object):
                 self.pbar.setValue(0)
                 self.pbar.setVisible(False)
             
-        self.animation = animation.FuncAnimation(self.figure, update, frames=framecount, interval=1, repeat=False)
+        self.animation = animation.FuncAnimation(self.figure, update, frames=framecount, interval=0, repeat=False)
 
 
 if __name__ == '__main__':

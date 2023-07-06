@@ -92,7 +92,6 @@ def next_step(og :Graph,
                 if np.linalg.norm(info[0].coord 
                                   - runner_info[j][0].coord)\
                 < step_length:
-                    print(edge)
                     g.delete_node(info[0])
                     #print(runner_info[j][0])
                     g.delete_node(runner_info[j][0])
