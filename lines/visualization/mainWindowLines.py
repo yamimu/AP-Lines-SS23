@@ -16,6 +16,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import networkx as nx 
+import numpy as np
 from ..base.graph import Graph, Node
 from ..base import game_functions as gf
 from ..optimization import shortestPath
@@ -182,7 +183,7 @@ class Ui_Lines(object):
         node1 = Node(coord = [0,4])
         node2 = Node(coord = [4,4])
         node3 = Node(coord = [4,0])
-        node4 = Node(coord=[5,0])
+        node4 = Node(coord=[5,1])
         edges1 = [(0,1),(0,3),(0,2),(1,2),(2,3)]
         g1 = Graph([node0,node1,node2,node3], edges1)
         g1.add_node(node4,[g1.nodes[0],g1.nodes[1]])
@@ -354,7 +355,14 @@ class Ui_Lines(object):
         """
         self.start_index = self.g.nodes.index(self.g.start_nodes[-1])
         self.ag, self.runner_info = gf.initial_step(self.g, self.start_index)
-        framecount = 120
+        floyd_matrix = shortestPath.floydwarshall(self.g)
+        worst_index = np.where(floyd_matrix[self.start_index] 
+                               == np.max(floyd_matrix[self.start_index]))
+        framecount = int((floyd_matrix[self.start_index][worst_index]\
+                    + 0.5*np.max(self.g.adjacency_matrix[worst_index]))\
+                        /self.step_length)+1
+
+        
 
         #init progress bar
         self.pbar.setMinimum(0)
@@ -412,7 +420,7 @@ class Ui_Lines(object):
                 self.pbar.setValue(0)
                 self.pbar.setVisible(False)
             
-        self.animation = animation.FuncAnimation(self.figure, update, frames=framecount, interval=0, repeat=False)
+        self.animation = animation.FuncAnimation(self.figure, update, frames=framecount, interval=1, repeat=False)
 
 
 if __name__ == '__main__':
