@@ -1,6 +1,5 @@
-from .graph import Graph, Node
-from .graph_functions import find_point_on_graph
-
+from ..base.graph import Graph, Node
+from ..base.graph_functions import find_point_on_graph
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
